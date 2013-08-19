@@ -9,6 +9,6 @@ public class CoursewareController {
   
   @RequestMapping("/index")
   public String index() {
-    return "index";
+    return "courseware";
   }
 }
