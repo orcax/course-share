@@ -1,33 +1,91 @@
 Ext.Loader.setConfig({enabled: true});
 
+Ext.require([
+  'Ext.ux.layout.Center'
+]);
+
 Ext.onReady(function(){
   
-  Ext.create('Ext.Viewport', {
-    layout: 'border',
+  var header = {
+    xtype: 'panel',
+    region: 'north',
+    layout: 'absolute',
+    height: 50,
+    bodyStyle: 'background: #F9FAF7',
+    border: false,
     items: [{
       xtype: 'box',
-      id: 'courseware-header',
-      region: 'north',
-      html: "<h1>Course Sharing Platform</h1>",
-      height: 50,
-      bodyPadding: 10
+      x: 0,
+      y: 0,
+      html: '<h3>Course Resource Sharing</h3>'
     }, {
+      xtype: 'toolbar',
+      x: 400,
+      y: 15,
+      baseCls: '',
+      items: [
+        '->', {
+          text: 'Courseware',
+          menu: {
+            items: [{
+              text: 'Review',
+              handler: function(item) {
+                alert(item);
+              }
+            }]
+          }
+        }, {
+          text: 'Problem Set'
+        }, 
+        '-', {
+          text: 'login'
+        }
+      ]
+    }]
+  };
+  
+  var content = {
+    xtype: 'panel',
+    layout: 'border',
+    region: 'center',
+    bodyBorder: false,
+    bodyPadding: 10,
+    items: [{
       xtype: 'panel',
-      id: 'courseware-west',
       region: 'west',
-      width: 250,
-      margins: 10
+      width: 250
     }, {
       xtype: 'panel',
-      id: 'courseware-center',
       region: 'center',
-      margins: 10
-    }, {
-      xtype: 'box',
-      id: 'footer',
-      region: 'south',
-      height: 20,
-      bodyPadding: 10
+      margins: '0 0 0 10'
+    }]
+  };
+  
+  var footer = {
+    xtype: 'box',
+    region: 'south',
+    bodyStyle: 'background: #F9FAF7',
+    border: false,
+    align: 'center',
+    html: '<p>Copyright Xian Yikun, 2013.08<p>'
+  };
+  
+  Ext.create('Ext.container.Viewport', {
+    style: {
+      backgroundColor: '#F9FAF7'
+    },
+    layout: 'ux.center',
+    items: [{
+      xtype: 'panel',
+      width: 1024,
+      bodyStyle: 'background: #F9FAF7',
+      border: false,
+      layout: 'border',     
+      items: [
+        header,
+        content,
+        footer
+      ]
     }]
     
   });
