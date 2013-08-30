@@ -10,7 +10,7 @@ Ext.onReady(function(){
     xtype: 'panel',
     region: 'north',
     layout: 'absolute',
-    height: 50,
+    height: 60,
     bodyStyle: 'background: #F9FAF7',
     border: false,
     items: [{
@@ -23,6 +23,10 @@ Ext.onReady(function(){
       x: 400,
       y: 15,
       baseCls: '',
+      defaults: {
+        margins: '0 5 0 5',
+        height: 30,
+      },
       items: [
         '->', {
           text: 'Courseware',
@@ -36,9 +40,8 @@ Ext.onReady(function(){
           }
         }, {
           text: 'Problem Set'
-        }, 
-        '-', {
-          text: 'login'
+        }, {
+          text: 'Sign In'
         }
       ]
     }]
@@ -67,7 +70,7 @@ Ext.onReady(function(){
     bodyStyle: 'background: #F9FAF7',
     border: false,
     align: 'center',
-    html: '<p>Copyright Xian Yikun, 2013.08<p>'
+    html: '<div id="footer"><p>Copyright Xian Yikun, 2013.08<p></div>'
   };
   
   Ext.create('Ext.container.Viewport', {
