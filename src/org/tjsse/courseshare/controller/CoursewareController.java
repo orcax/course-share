@@ -2,10 +2,13 @@ package org.tjsse.courseshare.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.tjsse.courseshare.bean.User;
 import org.tjsse.courseshare.service.ResourceService;
@@ -17,17 +20,25 @@ public class CoursewareController {
   @Autowired
   private ResourceService resourceService;
   
-  @RequestMapping("/index")
+  @RequestMapping(value="", method=RequestMethod.GET)
   public String index() {
-    return "courseware";
+    return "courseware/index";
+  }
+  
+  @RequestMapping(value="/view/{resourceId}", method=RequestMethod.GET)
+  public String view(@PathVariable String resourceId) {
+    return "courseware/view";
+  }
+  
+  @RequestMapping(value="/download/{resourceId}", method=RequestMethod.GET)
+  public void download() {
+    
   }
   
   @RequestMapping("/test")
   @ResponseBody
-  public List<String> test() {
-    List<String> list = new ArrayList<String>();
-    list.add("aaaaa");
-    list.add("bbbbbb");
-    return list;
+  public Map<String, Object> test() {
+    return resourceService.getEverything();
   }
+ 
 }

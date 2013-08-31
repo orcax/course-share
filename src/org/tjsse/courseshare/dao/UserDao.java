@@ -1,5 +1,5 @@
 package org.tjsse.courseshare.dao;
 
-public interface UserDao {
+public interface UserDao extends BaseDao {
 
 }
