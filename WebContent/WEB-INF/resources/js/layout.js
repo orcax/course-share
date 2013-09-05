@@ -29,14 +29,6 @@ Ext.onReady(function(){
       items: [
         '->', {
           text: 'Courseware',
-          menu: {
-            items: [{
-              text: 'Review',
-              handler: function(item) {
-                alert(item);
-              }
-            }]
-          }
         }, {
           text: 'Problem Set'
         }, {

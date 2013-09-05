@@ -22,12 +22,7 @@ public class CoursewareController {
   
   @RequestMapping(value="", method=RequestMethod.GET)
   public String index() {
-    return "courseware/index";
-  }
-  
-  @RequestMapping(value="/view/{resourceId}", method=RequestMethod.GET)
-  public String view(@PathVariable String resourceId) {
-    return "courseware/view";
+    return "courseware";
   }
   
   @RequestMapping(value="/download/{resourceId}", method=RequestMethod.GET)

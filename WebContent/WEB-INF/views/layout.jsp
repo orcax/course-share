@@ -8,7 +8,7 @@
   <link rel="stylesheet" type="text/css" href="<%=path %>/css/ext-theme-bootstrap/css/bootstrap/bootstrap.css" />
   <link rel="stylesheet" type="text/css" href="<%=path %>/css/base.css" />
   <script type="text/javascript" src="<%=path %>/js/lib/ext-all.js"></script>
-  <script type="text/javascript" src="<%=path %>/js/layout/frame.js"></script>
+  <script type="text/javascript" src="<%=path %>/js/layout.js"></script>
 </head>
 <body>
 </body>

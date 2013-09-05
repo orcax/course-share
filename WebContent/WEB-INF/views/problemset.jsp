@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <% String path = request.getContextPath(); %>
 
-<jsp:include page="../layout/frame.jsp" flush="true" />
+<jsp:include page="layout.jsp" flush="true" />
 
-<script type="text/javascript" src="<%=path %>/js/courseware/view.js"></script>
+<script type="text/javascript" src="<%=path %>/js/problemset.js"></script>

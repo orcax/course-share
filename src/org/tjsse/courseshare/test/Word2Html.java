@@ -66,13 +66,11 @@ public class Word2Html {
     WordToHtmlConverter wordToHtmlConverter = new WordToHtmlConverter(
         DocumentBuilderFactory.newInstance().newDocumentBuilder()
             .newDocument());
-     wordToHtmlConverter.setPicturesManager( new PicturesManager()
-         {
+     wordToHtmlConverter.setPicturesManager( new PicturesManager() {
              public String savePicture( byte[] content,
                      PictureType pictureType, String suggestedName,
-                     float widthInches, float heightInches )
-             {
-                 return "test/"+suggestedName;
+                     float widthInches, float heightInches ) {
+               return "test2/"+suggestedName;
              }
          } );
     wordToHtmlConverter.processDocument(wordDocument);
@@ -81,10 +79,10 @@ public class Word2Html {
     if(pics!=null){
       for(int i=0;i<pics.size();i++){
         Picture pic = (Picture)pics.get(i);
-        System.out.println();
+        System.out.println(pic.suggestFullFileName());
         try {
-          pic.writeImageContent(new FileOutputStream("D:/test/"
-              + pic.suggestFullFileName()));
+          //pic.writeImageContent(new FileOutputStream("D:/test2/" + pic.suggestFullFileName()));
+          pic.writeImageContent(new FileOutputStream("D:/test2/" + i + ".jpg"));
         } catch (FileNotFoundException e) {
           e.printStackTrace();
         }  

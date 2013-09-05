@@ -12,7 +12,7 @@ import org.tjsse.courseshare.dao.UserDao;
 import org.tjsse.courseshare.service.ResourceService;
 
 @Service
-public class ImplResourceService implements ResourceService{
+public class ImplCoursewareService implements ResourceService{
   
   @Autowired
   private ResourceDao resourceDao;
