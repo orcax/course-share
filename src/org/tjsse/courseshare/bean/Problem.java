@@ -4,13 +4,10 @@ public class Problem {
 
   private Integer id;
   private String problemType;
-  private String problemMediaType;
-  private String problemFileFormat;
-  private String problemUrl;
   private Integer difficulty;
-  private String keyMediaType;
-  private String keyFileFormat;
-  private String keyUrl;
+  private String problemContent;
+  private String keyContent;
+  private Integer knowledgeId;
 
   public Integer getId() {
     return id;
@@ -28,30 +25,6 @@ public class Problem {
     this.problemType = problemType;
   }
 
-  public String getProblemMediaType() {
-    return problemMediaType;
-  }
-
-  public void setProblemMediaType(String problemMediaType) {
-    this.problemMediaType = problemMediaType;
-  }
-
-  public String getProblemFileFormat() {
-    return problemFileFormat;
-  }
-
-  public void setProblemFileFormat(String problemFileFormat) {
-    this.problemFileFormat = problemFileFormat;
-  }
-
-  public String getProblemUrl() {
-    return problemUrl;
-  }
-
-  public void setProblemUrl(String problemUrl) {
-    this.problemUrl = problemUrl;
-  }
-
   public Integer getDifficulty() {
     return difficulty;
   }
@@ -60,28 +33,28 @@ public class Problem {
     this.difficulty = difficulty;
   }
 
-  public String getKeyMediaType() {
-    return keyMediaType;
+  public String getProblemContent() {
+    return problemContent;
   }
 
-  public void setKeyMediaType(String keyMediaType) {
-    this.keyMediaType = keyMediaType;
+  public void setProblemContent(String problemContent) {
+    this.problemContent = problemContent;
   }
 
-  public String getKeyFileFormat() {
-    return keyFileFormat;
+  public String getKeyContent() {
+    return keyContent;
   }
 
-  public void setKeyFileFormat(String keyFileFormat) {
-    this.keyFileFormat = keyFileFormat;
+  public void setKeyContent(String keyContent) {
+    this.keyContent = keyContent;
   }
 
-  public String getKeyUrl() {
-    return keyUrl;
+  public Integer getKnowledgeId() {
+    return knowledgeId;
   }
 
-  public void setKeyUrl(String keyUrl) {
-    this.keyUrl = keyUrl;
+  public void setKnowledgeId(Integer knowledgeId) {
+    this.knowledgeId = knowledgeId;
   }
 
 }

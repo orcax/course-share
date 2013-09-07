@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.tjsse.courseshare.bean.User;
-import org.tjsse.courseshare.service.ResourceService;
+import org.tjsse.courseshare.service.CoursewareService;
 
 @Controller
 @RequestMapping("/courseware")
 public class CoursewareController {
   
   @Autowired
-  private ResourceService resourceService;
+  private CoursewareService coursewareService;
   
   @RequestMapping(value="", method=RequestMethod.GET)
   public String index() {
@@ -33,7 +33,7 @@ public class CoursewareController {
   @RequestMapping("/test")
   @ResponseBody
   public Map<String, Object> test() {
-    return resourceService.getEverything();
+    return coursewareService.getEverything();
   }
  
 }

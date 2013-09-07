@@ -5,11 +5,7 @@ import java.util.Map;
 
 import org.tjsse.courseshare.bean.User;
 
-public interface ResourceService {
-  
-  public User getUser();
-  
-  public List<User> getAllUsers();
+public interface CoursewareService {
   
   public Map<String, Object> getEverything();
 }
