@@ -17,4 +17,6 @@ public interface BaseDao {
 
   public List<Map<String, Object>> query(String sql);
   
+  public <E extends Object> E save(E bean);
+  
 }

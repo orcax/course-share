@@ -2,8 +2,11 @@ package org.tjsse.courseshare.dao.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +16,10 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.tjsse.courseshare.dao.BaseDao;
 
@@ -25,25 +31,26 @@ public class JdbcBaseDao implements BaseDao {
   private static final String BEAN_PACKAGE = "org.tjsse.courseshare.bean";
   private static final String DAO_PREFIX = "Jdbc";
   private static final String DAO_SUFFIX = "Dao";
-  
+
   protected String bean;
   protected String table;
   protected JdbcTemplate jdbcTemplate;
-  
+
   public JdbcBaseDao() {
     if (bean == null || "".equals(bean)) {
-      bean = getClass().getSimpleName().replace(DAO_PREFIX, "").replace(DAO_SUFFIX, "");
+      bean = getClass().getSimpleName().replace(DAO_PREFIX, "")
+          .replace(DAO_SUFFIX, "");
     }
     if (table == null || "".equals(table)) {
       table = mapBean2Table(bean);
     }
   }
-  
+
   @Autowired
   protected void setJdbcTemplate(DataSource dataSource) {
     this.jdbcTemplate = new JdbcTemplate(dataSource);
   }
-  
+
   protected String mapBean2Table(String beanName) {
     if (beanName == null || beanName.equals("")) {
       return "";
@@ -57,7 +64,7 @@ public class JdbcBaseDao implements BaseDao {
     }
     return tableName.toLowerCase();
   }
-  
+
   protected String mapTable2Bean(String tableName) {
     if (tableName == null || tableName.equals("")) {
       return "";
@@ -69,7 +76,7 @@ public class JdbcBaseDao implements BaseDao {
     }
     return beanName;
   }
-  
+
   protected String makeAttrs(String[] fields) {
     String attrs = "";
     if (fields == null || fields.length == 0) {
@@ -82,7 +89,7 @@ public class JdbcBaseDao implements BaseDao {
     }
     return attrs.toUpperCase();
   }
-  
+
   protected <E extends Object> RowMapper<E> getMapper() {
     return new RowMapper<E>() {
       @Override
@@ -138,7 +145,7 @@ public class JdbcBaseDao implements BaseDao {
       }
     };
   }
-  
+
   @Override
   public <E extends Object> E read(Integer id) {
     if (id == null)
@@ -146,21 +153,22 @@ public class JdbcBaseDao implements BaseDao {
     String sql = String.format("SELECT * FROM %s WHERE id='%s';", table, id);
     return (E) jdbcTemplate.queryForObject(sql, getMapper());
   }
-  
+
   @Override
   public <E extends Object> E read(Integer id, String[] fields) {
     if (fields == null || fields.length == 0)
       return read(id);
-    String sql = String.format("SELECT %s FROM %s WHERE id='%s';", makeAttrs(fields), table, id);
+    String sql = String.format("SELECT %s FROM %s WHERE id='%s';",
+        makeAttrs(fields), table, id);
     return (E) jdbcTemplate.queryForObject(sql, getMapper());
   }
-  
+
   @Override
   public <E extends Object> List<E> find() {
     String sql = String.format("SELECT * FROM %s;", table);
     return (List<E>) jdbcTemplate.query(sql, getMapper());
   }
-  
+
   @Override
   public <E extends Object> List<E> find(String condition) {
     if (condition == null || "".equals(condition))
@@ -168,19 +176,97 @@ public class JdbcBaseDao implements BaseDao {
     String sql = String.format("SELECT * FROM %s WHERE %s;", table, condition);
     return (List<E>) jdbcTemplate.query(sql, getMapper());
   }
-  
+
   @Override
   public <E extends Object> List<E> find(String condition, String[] fields) {
     if (fields == null || fields.length == 0)
       return find(condition);
-    String sql = String.format("SELECT %s FROM %s WHERE %s;", makeAttrs(fields), table, condition);
+    String sql = String.format("SELECT %s FROM %s WHERE %s;",
+        makeAttrs(fields), table, condition);
     List<E> result = new ArrayList<E>();
     result = (List<E>) jdbcTemplate.query(sql, getMapper());
     return result;
   }
-  
+
   @Override
   public List<Map<String, Object>> query(String sql) {
     return jdbcTemplate.queryForList(sql);
+  }
+
+  @Override
+  public <E extends Object> E save(E bean) {
+    StringBuffer attrs = new StringBuffer();
+    StringBuffer values = new StringBuffer();
+    Method[] methods = bean.getClass().getMethods();
+    for (Method m : methods) {
+      if (!m.getName().startsWith("get") || m.getName().equals("getClass")) {
+        continue;
+      }
+      String attr = mapBean2Table(m.getName().substring(3));
+      Object value = null;
+      try {
+        value = m.invoke(bean);
+      } catch (Exception e) {
+        System.out.println(attr + " cannot be saved.");
+        continue;
+      }
+      if (value == null) {
+        continue;
+      }
+      attrs.append(attr + ",");
+      values.append(String.format("'%s',", value.toString()));
+    }
+    if (attrs.length() == 0 || values.length() == 0) {
+      return null;
+    }
+    attrs.deleteCharAt(attrs.length() - 1);
+    values.deleteCharAt(values.length() - 1);
+    final String sql = String.format("INSERT INTO %s(%s) VALUES (%s);",
+        this.table, attrs, values);
+    System.out.println(sql);
+    KeyHolder keyHolder = new GeneratedKeyHolder();
+    int result = 0;
+    try {
+      result = this.jdbcTemplate.update(new PreparedStatementCreator() {
+        @Override
+        public PreparedStatement createPreparedStatement(Connection connection)
+            throws SQLException {
+          PreparedStatement ps = connection.prepareStatement(sql,
+              new String[] { "id" });
+          return ps;
+        }
+      }, keyHolder);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+    if (result == 1) {
+      return (E) setBeanId(bean, keyHolder.getKey().intValue());
+    }
+    return null;
+  }
+
+  private Object setBeanId(Object bean, Integer id) {
+    try {
+      Method m = bean.getClass().getMethod("setId", Integer.class);
+      m.invoke(bean, id);
+      return bean;
+    } catch (NoSuchMethodException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (SecurityException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IllegalArgumentException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (InvocationTargetException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
   }
 }
