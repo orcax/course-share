@@ -174,6 +174,7 @@ public class JdbcBaseDao implements BaseDao {
     if (condition == null || "".equals(condition))
       return find();
     String sql = String.format("SELECT * FROM %s WHERE %s;", table, condition);
+    System.out.println(sql);
     return (List<E>) jdbcTemplate.query(sql, getMapper());
   }
 
@@ -223,7 +224,6 @@ public class JdbcBaseDao implements BaseDao {
     values.deleteCharAt(values.length() - 1);
     final String sql = String.format("INSERT INTO %s(%s) VALUES (%s);",
         this.table, attrs, values);
-    System.out.println(sql);
     KeyHolder keyHolder = new GeneratedKeyHolder();
     int result = 0;
     try {

@@ -1,3 +1,5 @@
+var root = '/course-share';
+
 Ext.Loader.setConfig({enabled: true});
 
 Ext.require([
@@ -17,7 +19,7 @@ Ext.onReady(function(){
       xtype: 'box',
       x: 0,
       y: 0,
-      html: '<h3>Course Resource Sharing</h3>'
+      html: '<h3>计算机体系结构课程资源</h3>'
     }, {
       xtype: 'toolbar',
       x: 400,
@@ -28,11 +30,9 @@ Ext.onReady(function(){
       },
       items: [
         '->', {
-          text: 'Courseware',
+          text: '课程资源',
         }, {
-          text: 'Problem Set'
-        }, {
-          text: 'Sign In'
+          text: '课程题库'
         }
       ]
     }]

@@ -79,7 +79,7 @@ public class ImplProblemSetService implements ProblemSetService {
       problem.setProblemType(problemType);
       problem.setProblemContent(problemContent.toString());
       problem.setKeyContent(keyContent.toString());
-      problem.setKnowledgeId(1);
+      problem.setKnowledge(knowledge);
       return problem;
     }
   }
@@ -119,7 +119,8 @@ public class ImplProblemSetService implements ProblemSetService {
         if (pr == null) {
           return "";
         }
-        String picPath = String.format("%s%d.%s", PIC_PATH, pr.getId(), pr.getType());
+        String picPath = String.format("%s%d.%s", PIC_PATH, pr.getId(),
+            pr.getType());
         String picUrl = String.format("%s%d", PIC_URL, pr.getId());
         return writeFile(content, picPath) ? picUrl : "";
       }
@@ -189,39 +190,29 @@ public class ImplProblemSetService implements ProblemSetService {
       }
 
       // Process for different symbols
-      String text = span.text().trim();
+      String text = extractText(e);
+      // System.out.println(text);
       if (text.isEmpty() || text.startsWith(COMMENT_SYMBOL)) {
         continue;
       }
-      if (text.startsWith(PROBLEM_TYPE_SYMBOL)) {
-        pi.problemType = extractText(e).substring(1);
-        pi.currSymbol = PROBLEM_TYPE_SYMBOL;
-        continue;
-      }
-      if (text.startsWith(DIFFICULTY_SYMBOL)) {
-        pi.difficulty = Integer.parseInt(extractText(e).substring(1));
-        pi.currSymbol = DIFFICULTY_SYMBOL;
-        continue;
-      }
-      if (text.startsWith(KEY_CONTENT_SYMBOL)) {
-        pi.currSymbol = KEY_CONTENT_SYMBOL;
-        continue;
-      }
-      if (text.startsWith(KNOWLEDGE_SYMBOL)) {
-        pi.knowledge = KNOWLEDGE_SYMBOL;
-        continue;
-      }
-      if (text.startsWith(PROBLEM_CONTENT_SYMBOL)) {
+      switch (text) {
+      case PROBLEM_TYPE_SYMBOL:
+      case DIFFICULTY_SYMBOL:
+      case PROBLEM_CONTENT_SYMBOL:
         if (pi.problemContent.length() != 0) {
-          // System.out.println(pi.problemContent.toString());
           count += problemDao.save(pi.toProblem()) == null ? 0 : 1;
         }
         pi.problemContent = new StringBuffer();
         pi.keyContent = new StringBuffer();
-        pi.currSymbol = PROBLEM_CONTENT_SYMBOL;
-        continue;
+        pi.currSymbol = text;
+        break;
+      case KEY_CONTENT_SYMBOL:
+      case KNOWLEDGE_SYMBOL:
+        pi.currSymbol = text;
+        break;
+      default:
+        saveElement(e, pi);
       }
-      saveElement(e, pi);
     }
     if (pi.problemContent.length() != 0) {
       count += problemDao.save(pi.toProblem()) == null ? 0 : 1;
@@ -269,6 +260,40 @@ public class ImplProblemSetService implements ProblemSetService {
     return result;
   }
 
+  public List<Problem> findProblems() {
+    List<Problem> problems = problemDao.find();
+    return problems;
+  }
+
+  public List<Problem> findProblems(String[] contents) {
+    if (contents == null || contents.length == 0) {
+      return findProblems();
+    }
+    StringBuffer condition = new StringBuffer();
+    for (int i = 0; i < contents.length; i++) {
+      if (condition.length() != 0) {
+        condition.append(" AND ");
+      }
+      condition.append(String.format(
+          "(problem_content LIKE '%%%s%%' OR knowledge LIKE '%%%s%%')",
+          contents[i], contents[i]));
+    }
+    return problemDao.find(condition.toString());
+  }
+
+  public List<Problem> findProblemsByTypes(String[] types) {
+    if (types == null || types.length == 0) {
+      return findProblems();
+    }
+    StringBuffer condition = new StringBuffer();
+    for (int i = 0; i < types.length; i++) {
+      if (condition.length() != 0)
+        condition.append(" OR ");
+      condition.append(String.format("problem_type='%s'", types[i]));
+    }
+    return problemDao.find(condition.toString());
+  }
+
   /**
    * Merge CSS inside style tag into specific elements.
    * 
@@ -301,6 +326,12 @@ public class ImplProblemSetService implements ProblemSetService {
     if (element == null || pi == null || pi.currSymbol == null)
       return;
     switch (pi.currSymbol) {
+    case PROBLEM_TYPE_SYMBOL:
+      pi.problemType = extractText(element);
+      break;
+    case DIFFICULTY_SYMBOL:
+      pi.difficulty = Integer.parseInt(extractText(element));
+      break;
     case PROBLEM_CONTENT_SYMBOL:
       if (pi.problemContent == null)
         pi.problemContent = new StringBuffer();
@@ -309,9 +340,11 @@ public class ImplProblemSetService implements ProblemSetService {
     case KEY_CONTENT_SYMBOL:
       if (pi.keyContent == null)
         pi.keyContent = new StringBuffer();
-      pi.keyContent.append(element.html());
+      pi.keyContent.append(element.outerHtml());
+      break;
     case KNOWLEDGE_SYMBOL:
       pi.knowledge = extractText(element);
+      break;
     }
   }
 

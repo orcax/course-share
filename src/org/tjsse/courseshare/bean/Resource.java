@@ -2,13 +2,19 @@ package org.tjsse.courseshare.bean;
 
 public class Resource {
   
+  public static final String DOC = "document";
+  public static final String SWF = "flash";
+  public static final String ZIP = "zipfile";
+  public static final String URL = "url";
+  public static final String JPG = "picture";
+  
   private Integer id;
   private String name;
   private String description;
   private String mediaType;
   private String fileFormat;
   private Double fileSize;
-  private String likeType;
+  private Integer isSubject;
   private String url;
 
   public Integer getId() {
@@ -59,13 +65,7 @@ public class Resource {
     this.fileSize = fileSize;
   }
 
-  public String getLikeType() {
-    return likeType;
-  }
 
-  public void setLikeType(String likeType) {
-    this.likeType = likeType;
-  }
 
   public String getUrl() {
     return url;

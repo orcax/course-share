@@ -1,6 +1,9 @@
 package org.tjsse.courseshare.service;
 
+import java.util.List;
+
 import org.tjsse.courseshare.bean.DSPicture;
+import org.tjsse.courseshare.bean.Problem;
 import org.tjsse.courseshare.util.Config;
 
 public interface ProblemSetService {
@@ -23,4 +26,10 @@ public interface ProblemSetService {
   public int splitProblem(String htmlPath);
   
   public DSPicture readPicture(int id);
+  
+  public List<Problem> findProblems();
+  
+  public List<Problem> findProblems(String[] contents);
+  
+  public List<Problem> findProblemsByTypes(String[] types);
 }

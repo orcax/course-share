@@ -7,7 +7,7 @@ public class Problem {
   private Integer difficulty;
   private String problemContent;
   private String keyContent;
-  private Integer knowledgeId;
+  private String knowledge;
 
   public Integer getId() {
     return id;
@@ -45,16 +45,16 @@ public class Problem {
     return keyContent;
   }
 
+  public String getKnowledge() {
+    return knowledge;
+  }
+
+  public void setKnowledge(String knowledge) {
+    this.knowledge = knowledge;
+  }
+
   public void setKeyContent(String keyContent) {
     this.keyContent = keyContent;
-  }
-
-  public Integer getKnowledgeId() {
-    return knowledgeId;
-  }
-
-  public void setKnowledgeId(Integer knowledgeId) {
-    this.knowledgeId = knowledgeId;
   }
 
 }
