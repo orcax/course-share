@@ -4,7 +4,9 @@ Ext.onReady(function() {
    * Read problems from server filtered by some conditions.
    */
   var fetchProblems = function(problemType, problemContent) {
-    Ext.MessageBox.wait('Loading......', '');
+    //Ext.MessageBox.wait('Loading......', '');
+    var mask = new Ext.LoadMask(Ext.getCmp('content-panel').el, {msg: 'Loading...'});
+    mask.show();
     var params = {};
     if (problemType != undefined && problemType.length > 0) {
       params['problem_type'] = problemType;
@@ -19,16 +21,18 @@ Ext.onReady(function() {
       method : 'get',
       params : params,
       success : function(resp) {
+        //Ext.MessageBox.hide();
+        mask.hide();
         var problems = Ext.JSON.decode(resp.responseText);
-        console.log(problems);
+        var items = [];
         for ( var i in problems) {
-          var p = makeProblemTemplate(problems[i]);
-          panel.add(p);
+          items.push(makeProblemTemplate(problems[i]));
         }
-        Ext.MessageBox.hide();
+        panel.add(items);
       },
       failure: function() {
-        Ext.MessageBox.hide();
+        mask.hide();
+        //Ext.MessageBox.hide();
       }
     });
   };
@@ -45,7 +49,7 @@ Ext.onReady(function() {
       bodyStyle : {
         borderTop : 0,
         borderRight : 0,
-        borderLeft : 0,
+        borderLeft : 0
       },
       items : [ {
         xtype : 'panel',
@@ -77,7 +81,7 @@ Ext.onReady(function() {
   };
 
   var getFilterContent = function() {
-    var content = Ext.getCmp('problem-search').getValue().trim();
+    var content = Ext.getCmp('problem-search').getValue();
     var form = Ext.getCmp('problem-type-form').getForm();
     var values = form.getValues();
     var types = [];
@@ -98,7 +102,7 @@ Ext.onReady(function() {
     bodyStyle : {
       borderTop : 0,
       borderRight : 0,
-      borderLeft : 0,
+      borderLeft : 0
     },
     layout : 'column',
     items : [ {
@@ -107,7 +111,14 @@ Ext.onReady(function() {
       name : 'problemSearch',
       width : 500,
       height : 30,
-      emptyText : '搜索题目'
+      emptyText : '搜索题目',
+      listeners: {
+        specialkey: function(f, e) {
+          if(e.getKey() == e.ENTER) {
+            getFilterContent();
+          }
+        }
+      }
     }, {
       xtype : 'button',
       height : 30,
@@ -130,7 +141,7 @@ Ext.onReady(function() {
     bodyStyle : {
       borderTop : 0,
       borderBottom : 0,
-      borderLeft : 0,
+      borderLeft : 0
     },
     bodyPadding : '20 10 0 20',
     defaultType : 'checkboxfield',
@@ -198,7 +209,7 @@ Ext.onReady(function() {
     border : 0,
     autoScroll : true,
     listeners : {
-      beforerender : function(comp, opts) {
+      afterrender : function(comp, opts) {
         fetchProblems();
       }
     }
@@ -212,7 +223,7 @@ Ext.onReady(function() {
     id : 'problemset-panel',
     layout : 'border',
     bodyBorder : false,
-    items : [ searchPanel, filterForm, listForm ],
+    items : [ searchPanel, filterForm, listForm ]
   };
 
   var contentPanel = Ext.getCmp("content-panel");

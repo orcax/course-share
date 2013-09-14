@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 import org.tjsse.courseshare.bean.DSPicture;
 import org.tjsse.courseshare.bean.Problem;
 import org.tjsse.courseshare.service.ProblemSetService;
@@ -34,8 +35,8 @@ public class ProblemSetController {
   private ProblemSetService problemSetService;
 
   @RequestMapping(value = "", method = RequestMethod.GET)
-  public String index() {
-    return "problemset";
+  public ModelAndView index() {
+    return new ModelAndView("problemset", "pageTitle", "题库");
   }
 
   @RequestMapping(value = "/import", method = RequestMethod.GET)
@@ -77,10 +78,10 @@ public class ProblemSetController {
     // Get problems for specific contents
     String[] contents = null;
     if (problemContent != null) {
-      StringTokenizer st = new StringTokenizer(problemContent.trim(), " ");
+      StringTokenizer st = new StringTokenizer(problemContent);
       contents = new String[st.countTokens()];
       for (int i = 0; i < st.countTokens(); i++) {
-        contents[i] = st.nextToken();
+        contents[i] = st.nextToken().trim();
       }
     }
     List<Problem> p2 = problemSetService.findProblems(contents);

@@ -19,20 +19,36 @@ Ext.onReady(function(){
       xtype: 'box',
       x: 0,
       y: 0,
-      html: '<h3>计算机体系结构课程资源</h3>'
+      html: '<h2>计算机系统结构资源——' + pageTitle + '</h2>'
     }, {
       xtype: 'toolbar',
       x: 400,
       y: 15,
       baseCls: '',
       defaults: {
-        margins: '0 5 0 5',
+        margins: '0 5 0 5'
       },
       items: [
         '->', {
-          text: '课程资源',
+          text: '素材库',
+          handler: function() {
+            window.location.href = root + '/image';
+          }
         }, {
-          text: '课程题库'
+          text: '动画库',
+          handler: function() {
+            window.location.href = root + '/flash';
+          }
+        }, {
+          text: '专题库',
+          handler: function() {
+            window.location.href = root + '/subject';
+          }
+        }, {
+          text: '题库',
+          handler: function() {
+            window.location.href = root + '/problemset';
+          }
         }
       ]
     }]
@@ -44,7 +60,7 @@ Ext.onReady(function(){
     layout: 'fit',
     region: 'center',
     bodyStyle: 'background: #F9FAF7',
-    border: false,
+    border: false
   };
   
   var footer = {

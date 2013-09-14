@@ -150,7 +150,7 @@ public class JdbcBaseDao implements BaseDao {
   public <E extends Object> E read(Integer id) {
     if (id == null)
       return null;
-    String sql = String.format("SELECT * FROM %s WHERE id='%s';", table, id);
+    String sql = String.format("SELECT * FROM %s WHERE id='%s' LIMIT 50;", table, id);
     return (E) jdbcTemplate.queryForObject(sql, getMapper());
   }
 
@@ -158,14 +158,14 @@ public class JdbcBaseDao implements BaseDao {
   public <E extends Object> E read(Integer id, String[] fields) {
     if (fields == null || fields.length == 0)
       return read(id);
-    String sql = String.format("SELECT %s FROM %s WHERE id='%s';",
+    String sql = String.format("SELECT %s FROM %s WHERE id='%s' LIMIT 50;",
         makeAttrs(fields), table, id);
     return (E) jdbcTemplate.queryForObject(sql, getMapper());
   }
 
   @Override
   public <E extends Object> List<E> find() {
-    String sql = String.format("SELECT * FROM %s;", table);
+    String sql = String.format("SELECT * FROM %s LIMIT 50;", table);
     return (List<E>) jdbcTemplate.query(sql, getMapper());
   }
 
@@ -173,7 +173,7 @@ public class JdbcBaseDao implements BaseDao {
   public <E extends Object> List<E> find(String condition) {
     if (condition == null || "".equals(condition))
       return find();
-    String sql = String.format("SELECT * FROM %s WHERE %s;", table, condition);
+    String sql = String.format("SELECT * FROM %s WHERE %s LIMIT 50;", table, condition);
     System.out.println(sql);
     return (List<E>) jdbcTemplate.query(sql, getMapper());
   }
@@ -182,7 +182,7 @@ public class JdbcBaseDao implements BaseDao {
   public <E extends Object> List<E> find(String condition, String[] fields) {
     if (fields == null || fields.length == 0)
       return find(condition);
-    String sql = String.format("SELECT %s FROM %s WHERE %s;",
+    String sql = String.format("SELECT %s FROM %s WHERE %s LIMIT 50;",
         makeAttrs(fields), table, condition);
     List<E> result = new ArrayList<E>();
     result = (List<E>) jdbcTemplate.query(sql, getMapper());
@@ -215,7 +215,7 @@ public class JdbcBaseDao implements BaseDao {
         continue;
       }
       attrs.append(attr + ",");
-      values.append(String.format("'%s',", value.toString()));
+      values.append(String.format("\"%s\",", value.toString().replaceAll("\"", "'")));
     }
     if (attrs.length() == 0 || values.length() == 0) {
       return null;

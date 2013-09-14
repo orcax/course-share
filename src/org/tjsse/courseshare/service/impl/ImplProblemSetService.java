@@ -271,6 +271,8 @@ public class ImplProblemSetService implements ProblemSetService {
     }
     StringBuffer condition = new StringBuffer();
     for (int i = 0; i < contents.length; i++) {
+      if (contents[i] == null || contents[i].isEmpty())
+        continue;
       if (condition.length() != 0) {
         condition.append(" AND ");
       }
