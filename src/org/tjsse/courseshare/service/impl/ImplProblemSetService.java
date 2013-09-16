@@ -260,11 +260,13 @@ public class ImplProblemSetService implements ProblemSetService {
     return result;
   }
 
+  @Override
   public List<Problem> findProblems() {
     List<Problem> problems = problemDao.find();
     return problems;
   }
 
+  @Override
   public List<Problem> findProblems(String[] contents) {
     if (contents == null || contents.length == 0) {
       return findProblems();
@@ -283,6 +285,77 @@ public class ImplProblemSetService implements ProblemSetService {
     return problemDao.find(condition.toString());
   }
 
+  @Override
+  public List<Problem> findProblems(String[] types, Integer[] difficulty,
+      String[] contents, String[] knowledge) {
+
+    StringBuffer typeCondition = new StringBuffer();
+    if (types != null) {
+      for (int i = 0; i < types.length; i++) {
+        if (types[i] == null || types[i].isEmpty())
+          continue;
+        if (typeCondition.length() != 0)
+          typeCondition.append(" OR ");
+        typeCondition.append(String.format("problem_type='%s'", types[i]));
+      }
+    }
+
+    StringBuffer diffCondition = new StringBuffer();
+    if (difficulty != null) {
+      for (int i = 0; i < difficulty.length; i++) {
+        if (difficulty[i] == null)
+          continue;
+        if (diffCondition.length() != 0)
+          diffCondition.append(" OR ");
+        diffCondition.append(String.format("difficulty=%d", difficulty[i]));
+      }
+    }
+
+    StringBuffer contentCondition = new StringBuffer();
+    if (contents != null) {
+      for (int i = 0; i < contents.length; i++) {
+        if (contents[i] == null || contents[i].isEmpty())
+          continue;
+        if (contentCondition.length() != 0) {
+          contentCondition.append(" AND ");
+        }
+        contentCondition.append(String.format(
+            "(problem_content LIKE '%%%s%%' OR knowledge LIKE '%%%s%%')",
+            contents[i], contents[i]));
+      }
+    }
+
+    System.out.println("1:" + knowledge);
+    StringBuffer knowCondition = new StringBuffer();
+    if (knowledge != null) {
+      for (int i = 0; i < knowledge.length; i++) {
+        if (knowledge[i] == null || knowledge[i].isEmpty())
+          continue;
+        if (knowCondition.length() != 0) {
+          knowCondition.append(" AND ");
+        }
+        knowCondition.append(String.format("knowledge LIKE '%%%s%%'",
+            knowledge[i]));
+      }
+    }
+    System.out.println("2:" + knowCondition);
+
+    StringBuffer condition = new StringBuffer();
+    if (typeCondition.length() > 0)
+      condition.append("(" + typeCondition + ")AND");
+    if (diffCondition.length() > 0)
+      condition.append("(" + diffCondition + ")AND");
+    if (contentCondition.length() > 0)
+      condition.append("(" + contentCondition + ")AND");
+    if (knowCondition.length() > 0)
+      condition.append("(" + knowCondition + ")AND");
+    String cond = condition.toString();
+    if (cond.endsWith("AND"))
+      cond = cond.substring(0, condition.lastIndexOf("AND"));
+    return problemDao.find(cond);
+  }
+
+  @Override
   public List<Problem> findProblemsByTypes(String[] types) {
     if (types == null || types.length == 0) {
       return findProblems();
@@ -417,4 +490,5 @@ public class ImplProblemSetService implements ProblemSetService {
       e.printStackTrace();
     }
   }
+
 }

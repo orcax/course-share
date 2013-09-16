@@ -57,62 +57,85 @@ public class ProblemSetController {
   @RequestMapping(value = "/list", method = RequestMethod.GET)
   @ResponseBody
   public List<Problem> listProblems(
-      @RequestParam(value="problem_type", required=false) String problemType, 
-      @RequestParam(value="problem_content", required=false) String problemContent) {
+      @RequestParam(value = "problem_type", required = false) String problemType,
+      @RequestParam(value = "difficulty", required = false) String difficulty,
+      @RequestParam(value = "problem_content", required = false) String problemContent,
+      @RequestParam(value = "knowledge", required = false) String knowledge) {
+    System.out.println("type:" + problemType);
+    System.out.println("difficulty:" + difficulty);
     System.out.println("content:" + problemContent);
-    if (problemType == null && problemContent == null) {
-      return problemSetService.findProblems();
-    }
+    System.out.println("knowledge:" + knowledge);
 
     // Get problems for specific types
-    String[] types = null;
+    List<String> types = new ArrayList<String>();
+    String[] pts = null;
     if (problemType != null) {
-      StringTokenizer st = new StringTokenizer(problemType.trim(), ",");
-      types = new String[st.countTokens()];
-      for (int i = 0; i < st.countTokens(); i++) {
-        types[i] = mapCnProblemType(st.nextToken().trim());
+      StringTokenizer st = new StringTokenizer(problemType, ",");
+      while (st.hasMoreTokens()) {
+        String t = mapCnProblemType(st.nextToken().trim());
+        if (!t.isEmpty())
+          types.add(t);
       }
+      if (!types.isEmpty())
+        pts = types.toArray(new String[types.size()]);
     }
-    List<Problem> p1 = problemSetService.findProblemsByTypes(types);
+
+    // Get problems for specific difficulty
+    List<Integer> diffs = new ArrayList<Integer>();
+    Integer[] pds = null;
+    if (difficulty != null) {
+      StringTokenizer st = new StringTokenizer(difficulty, ",");
+      while (st.hasMoreTokens()) {
+        Integer d = Integer.parseInt(st.nextToken().trim());
+        diffs.add(d);
+      }
+      if (!diffs.isEmpty())
+        pds = diffs.toArray(new Integer[diffs.size()]);
+    }
 
     // Get problems for specific contents
-    String[] contents = null;
+    List<String> contents = new ArrayList<String>();
+    String[] pcs = null;
     if (problemContent != null) {
       StringTokenizer st = new StringTokenizer(problemContent);
-      contents = new String[st.countTokens()];
-      for (int i = 0; i < st.countTokens(); i++) {
-        contents[i] = st.nextToken().trim();
+      while (st.hasMoreTokens()) {
+        String c = st.nextToken().trim();
+        if (!c.isEmpty())
+          contents.add(c);
       }
+      if (!contents.isEmpty())
+        pcs = contents.toArray(new String[contents.size()]);
     }
-    List<Problem> p2 = problemSetService.findProblems(contents);
 
-    // Merge above problems and return
-    Set<Integer> ids = new TreeSet<Integer>();
-    for (int i = 0; i < p1.size(); i++) {
-      ids.add(p1.get(i).getId());
-    }
-    List<Problem> p3 = new ArrayList<Problem>();
-    for (int i = 0; i < p2.size(); i++) {
-      if (ids.contains(p2.get(i).getId())) {
-        p3.add(p2.get(i));
+    // Get problems for specific knowledge
+    List<String> knows = new ArrayList<String>();
+    String[] pks = null;
+    if (knowledge != null) {
+      StringTokenizer st = new StringTokenizer(knowledge);
+      while (st.hasMoreTokens()) {
+        String k = st.nextToken().trim();
+        if (!k.isEmpty())
+          knows.add(k);
       }
+      if (!knows.isEmpty())
+        pks = knows.toArray(new String[knows.size()]);
     }
-    return p3;
+    System.out.println("pks:" + pks);
+
+    return problemSetService.findProblems(pts, pds, pcs, pks);
   }
 
   private String mapCnProblemType(String en) {
-    switch (en) {
-    case "type_concept":
+    if ("type_concept".equals(en))
       return "概念题";
-    case "type_blankfill":
+    if ("type_blankfill".equals(en))
       return "填空题";
-    case "type_choice":
+    if ("type_choice".equals(en))
       return "选择题";
-    case "type_question":
+    if ("type_question".equals(en))
       return "问答题";
-    case "type_integrate":
+    if ("type_integrate".equals(en))
       return "综合题";
-    }
     return "";
   }
 

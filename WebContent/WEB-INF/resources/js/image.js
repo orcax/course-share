@@ -1,11 +1,14 @@
 Ext.onReady(function() {
 
+  var borderColor = '#4858a4';
+  var backColor = '#6a6db0';
+
   /**
    * Read images from server filtered by some conditions.
    */
   var fetchImages = function(imageContent) {
     // Ext.MessageBox.wait('Loading......', '');
-    var mask = new Ext.LoadMask(Ext.getCmp('content-panel').el, {
+    var mask = new Ext.LoadMask(Ext.getCmp('image-panel').el, {
       msg : 'Loading...'
     });
     mask.show();
@@ -44,48 +47,36 @@ Ext.onReady(function() {
       xtype : 'panel',
       id : 'image_' + image['id'],
       layout : 'column',
-      width : 800,
+      width : 838,
       bodyStyle : {
+        borderColor : borderColor,
         borderTop : 0,
         borderRight : 0,
         borderLeft : 0
       },
-      items : [ {
-        xtype : 'panel',
+      defaultType : 'panel',
+      defaults : {
         border : false,
+        bodyPadding : '15 5 5 15'
+      },
+      items : [ {
         columnWidth : 0.8,
-        bodyPadding : 10,
         html : '<p>' + image['name'] + '</p><p>' + image['knowledge'] + '</p>'
       }, {
-        xtype : 'panel',
-        layout : {
-          type : 'vbox',
-          align : 'left'
-        },
-        border : false,
         columnWidth : 0.2,
-        bodyPadding : 10,
-        items : [ {
-          xtype : 'button',
-          text : '打开素材',
-          //image_url : image['url'],
-          handler : function(btn) {
-            window.open(image['url']);
-            /*
-            Ext.widget('window', {
-              title : image['name'],
-              layout : 'fit',
-              width : 800,
-              height : 600,
-              resizable : true,
-              items : {
-                xtype : 'image',
-                src : btn.image_url
-              }
-            }).show();
-            */
-          }
-        } ]
+        xtype : 'button',
+        text : '打开素材',
+        margin : '15 10 0 0',
+        // image_url : image['url'],
+        handler : function(btn) {
+          window.open(image['url']);
+          /*
+           * Ext.widget('window', { title : image['name'], layout : 'fit', width :
+           * 800, height : 600, resizable : true, items : { xtype : 'image', src :
+           * btn.image_url } }).show();
+           */
+        }
+
       } ]
     };
   };
@@ -98,12 +89,14 @@ Ext.onReady(function() {
   var searchPanel = {
     xtype : 'panel',
     region : 'north',
-    margin : '0 20 0 20',
-    bodyPadding : '15 0 10 0',
+    margin : 0,
+    bodyPadding : 15,
     bodyStyle : {
+      borderColor : borderColor,
       borderTop : 0,
       borderRight : 0,
-      borderLeft : 0
+      borderLeft : 0,
+      background : backColor
     },
     layout : 'column',
     items : [ {
@@ -113,9 +106,9 @@ Ext.onReady(function() {
       width : 500,
       height : 30,
       emptyText : '搜索素材',
-      listeners: {
-        specialkey: function(f, e) {
-          if(e.getKey() == e.ENTER) {
+      listeners : {
+        specialkey : function(f, e) {
+          if (e.getKey() == e.ENTER) {
             getFilterContent();
           }
         }
@@ -123,14 +116,16 @@ Ext.onReady(function() {
     }, {
       xtype : 'button',
       height : 30,
+      width: 120,
       margin : '0 0 0 10',
+      //baseCls : 'button_yellow',
       padding : 8,
       text : '查询素材',
       handler : getFilterContent
     }, {
-      xtype : 'panel',
-      columnWidth : 1,
-      border : false
+      xtype: 'panel',
+      border: false,
+      columnWidth : 1
     } ]
   };
 
@@ -138,17 +133,20 @@ Ext.onReady(function() {
     xtype : 'form',
     id : 'image-type-form',
     region : 'west',
-    width : 200,
+    width : 120,
+    bodyPadding : '10 15 10 15',
     bodyStyle : {
-      borderTop : 0,
-      borderBottom : 0,
-      borderLeft : 0
+      borderColor : borderColor,
+      background : backColor
     },
-    bodyPadding : '20 10 0 20',
+    border : false,
+    margin : '15 0 0 0', 
     defaultType : 'checkboxfield',
     defaults : {
       listeners : {
         change : function(field, newValue, oldValue, opts) {
+          if (!newValue)
+            form.queryById('type_all').setValue(true);
           /*
            * var form = Ext.getCmp('problem-type-form'); if (field.name ==
            * 'type_all' && newValue) {
@@ -169,9 +167,13 @@ Ext.onReady(function() {
       xtype : 'button',
       text : '过滤素材',
       margin : '0 0 10 0',
+      width: 90,
+      //baseCls : 'button_yellow',
       handler : getFilterContent
     }, {
       boxLabel : '所有素材',
+      margin: '15 0 0 0',
+      cls: 'checkbox_white',
       id : 'type_all',
       name : 'type_all',
       checked : true
@@ -194,15 +196,18 @@ Ext.onReady(function() {
   /**
    * Image Set Panel (Main)
    */
-  var imagePanel = {
-    xtype : 'panel',
+  Ext.create('Ext.panel.Panel', {
     id : 'image-panel',
     layout : 'border',
-    bodyBorder : false,
+    bodyStyle : {
+      borderColor : borderColor,
+      borderTop : 0,
+      borderBottom : 0,
+      background : backColor
+    },
+    height : Ext.get('main-content').getHeight(),
+    renderTo : 'main-content',
     items : [ searchPanel, filterForm, listForm ]
-  };
+  });
 
-  var contentPanel = Ext.getCmp("content-panel");
-  contentPanel.removeAll();
-  contentPanel.add(imagePanel);
 });

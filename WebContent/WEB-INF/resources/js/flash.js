@@ -1,11 +1,14 @@
 Ext.onReady(function() {
 
+  var borderColor = '#ba3d66';
+  var backColor = '#c8547c';
+
   /**
    * Read flashs from server filtered by some conditions.
    */
   var fetchFlashs = function(flashContent) {
     // Ext.MessageBox.wait('Loading......', '');
-    var mask = new Ext.LoadMask(Ext.getCmp('content-panel').el, {
+    var mask = new Ext.LoadMask(Ext.getCmp('flash-panel').el, {
       msg : 'Loading...'
     });
     mask.show();
@@ -44,48 +47,35 @@ Ext.onReady(function() {
       xtype : 'panel',
       id : 'flash_' + flash['id'],
       layout : 'column',
-      width : 800,
+      width : 838,
       bodyStyle : {
+        borderColor : borderColor,
         borderTop : 0,
         borderRight : 0,
         borderLeft : 0
       },
-      items : [ {
-        xtype : 'panel',
+      defaultType : 'panel',
+      defaults : {
         border : false,
+        bodyPadding : '15 5 5 15'
+      },
+      items : [ {
         columnWidth : 0.8,
-        bodyPadding : 10,
         html : '<p>' + flash['name'] + '</p><p>' + flash['knowledge'] + '</p>'
       }, {
-        xtype : 'panel',
-        layout : {
-          type : 'vbox',
-          align : 'left'
-        },
-        border : false,
         columnWidth : 0.2,
-        bodyPadding : 10,
-        items : [ {
-          xtype : 'button',
-          text : '播放动画',
-          //url : flash['url'],
-          handler : function(btn) {
-            window.open(flash['url']);
-            /*
-            Ext.widget('window', {
-              title : flash['name'],
-              layout : 'fit',
-              width : 800,
-              height : 600,
-              resizable : true,
-              items : {
-                xtype : 'flash',
-                url : btn.flash_url
-              }
-            }).show();
-            */
-          }
-        } ]
+        xtype : 'button',
+        text : '播放动画',
+        margin : '15 10 0 0',
+        // url : flash['url'],
+        handler : function(btn) {
+          window.open(flash['url']);
+          /*
+           * Ext.widget('window', { title : flash['name'], layout : 'fit', width :
+           * 800, height : 600, resizable : true, items : { xtype : 'flash', url :
+           * btn.flash_url } }).show();
+           */
+        }
       } ]
     };
   };
@@ -98,12 +88,14 @@ Ext.onReady(function() {
   var searchPanel = {
     xtype : 'panel',
     region : 'north',
-    margin : '0 20 0 20',
-    bodyPadding : '15 0 10 0',
+    margin : 0,
+    bodyPadding : 15,
     bodyStyle : {
+      borderColor : borderColor,
       borderTop : 0,
       borderRight : 0,
-      borderLeft : 0
+      borderLeft : 0,
+      background : backColor
     },
     layout : 'column',
     items : [ {
@@ -113,9 +105,9 @@ Ext.onReady(function() {
       width : 500,
       height : 30,
       emptyText : '搜索动画',
-      listeners: {
-        specialkey: function(f, e) {
-          if(e.getKey() == e.ENTER) {
+      listeners : {
+        specialkey : function(f, e) {
+          if (e.getKey() == e.ENTER) {
             getFilterContent();
           }
         }
@@ -123,6 +115,8 @@ Ext.onReady(function() {
     }, {
       xtype : 'button',
       height : 30,
+      width : 120,
+      //baseCls : 'button_yellow',
       margin : '0 0 0 10',
       padding : 8,
       text : '查询动画',
@@ -138,17 +132,20 @@ Ext.onReady(function() {
     xtype : 'form',
     id : 'flash-type-form',
     region : 'west',
-    width : 200,
+    width : 120,
+    bodyPadding : '10 15 10 15',
     bodyStyle : {
-      borderTop : 0,
-      borderBottom : 0,
-      borderLeft : 0
+      borderColor : borderColor,
+      background : backColor
     },
-    bodyPadding : '20 10 0 20',
+    border : false,
+    margin : '15 0 0 0',
     defaultType : 'checkboxfield',
     defaults : {
       listeners : {
         change : function(field, newValue, oldValue, opts) {
+          if (!newValue)
+            form.queryById('type_all').setValue(true);
           /*
            * var form = Ext.getCmp('problem-type-form'); if (field.name ==
            * 'type_all' && newValue) {
@@ -169,9 +166,13 @@ Ext.onReady(function() {
       xtype : 'button',
       text : '过滤动画',
       margin : '0 0 10 0',
+      width: 90,
+      //baseCls : 'button_yellow',
       handler : getFilterContent
     }, {
+      margin : '15 0 0 0',
       boxLabel : '所有动画',
+      cls : 'checkbox_white',
       id : 'type_all',
       name : 'type_all',
       checked : true
@@ -194,15 +195,17 @@ Ext.onReady(function() {
   /**
    * Flash Set Panel (Main)
    */
-  var flashPanel = {
-    xtype : 'panel',
+  Ext.create('Ext.panel.Panel', {
     id : 'flash-panel',
     layout : 'border',
-    bodyBorder : false,
+    bodyStyle : {
+      borderColor : borderColor,
+      borderTop : 0,
+      borderBottom : 0,
+      background : backColor
+    },
+    height : Ext.get('main-content').getHeight(),
+    renderTo : 'main-content',
     items : [ searchPanel, filterForm, listForm ]
-  };
-
-  var contentPanel = Ext.getCmp("content-panel");
-  contentPanel.removeAll();
-  contentPanel.add(flashPanel);
+  });
 });

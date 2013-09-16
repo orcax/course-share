@@ -31,5 +31,7 @@ public interface ProblemSetService {
   
   public List<Problem> findProblems(String[] contents);
   
+  public List<Problem> findProblems(String[] types, Integer[] difficulty, String[] contents, String[] knowledge);
+
   public List<Problem> findProblemsByTypes(String[] types);
 }
