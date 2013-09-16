@@ -39,17 +39,24 @@ public class ProblemSetController {
     return new ModelAndView("problemset", "pageTitle", "题库");
   }
 
-  @RequestMapping(value = "/import", method = RequestMethod.GET)
+  @RequestMapping(value = "/import/{problems}", method = RequestMethod.GET)
   @ResponseBody
-  public String importProblems() {
-    String docPath = Config.ROOT_PATH + "problem2.doc";
-    String htmlPath = Config.ROOT_PATH + "problem2.html";
-    if (!problemSetService.convertDoc2Html(docPath, htmlPath)) {
-      return "fail";
-    }
-    int count = problemSetService.splitProblem(htmlPath);
-    if (count < 0) {
-      return "fail";
+  public String importProblems(@PathVariable String problems) {
+    if(problems == null)
+      return "0 problems are imported.";
+    StringTokenizer st = new StringTokenizer(problems, ",");
+    int count = 0;
+    while(st.hasMoreTokens()) {
+      String p = st.nextToken().trim();
+      if(p.isEmpty())
+        continue;
+      String docPath = Config.ROOT_PATH + p + ".doc";
+      String htmlPath = Config.ROOT_PATH + p + ".html";
+      if (!problemSetService.convertDoc2Html(docPath, htmlPath))
+        continue;
+      int c = problemSetService.splitProblem(htmlPath);
+      if(c > 0)
+        count += c;
     }
     return count + " problems are imported";
   }
@@ -124,6 +131,20 @@ public class ProblemSetController {
 
     return problemSetService.findProblems(pts, pds, pcs, pks);
   }
+  
+  @RequestMapping(value = "/picture/{picId}", method = RequestMethod.GET)
+  public void picture(@PathVariable Integer picId, HttpServletResponse resp) {
+    DSPicture pic = problemSetService.readPicture(picId);
+    resp.setContentType("image/" + pic.getMediaType());
+    try {
+      OutputStream os = resp.getOutputStream();
+      os.write(pic.getContent());
+      os.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
 
   private String mapCnProblemType(String en) {
     if ("type_concept".equals(en))
@@ -139,16 +160,4 @@ public class ProblemSetController {
     return "";
   }
 
-  @RequestMapping(value = "/picture/{picId}", method = RequestMethod.GET)
-  public void picture(@PathVariable Integer picId, HttpServletResponse resp) {
-    DSPicture pic = problemSetService.readPicture(picId);
-    resp.setContentType("image/" + pic.getMediaType());
-    try {
-      OutputStream os = resp.getOutputStream();
-      os.write(pic.getContent());
-      os.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
-}

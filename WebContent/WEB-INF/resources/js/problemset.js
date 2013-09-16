@@ -4,114 +4,8 @@ Ext.onReady(function() {
   var backColor = '#41ab93';
 
   /**
-   * Read problems from server filtered by some conditions.
+   * Get filter values
    */
-  var fetchProblems = function(problemType, difficulty, problemContent,
-      knowledge) {
-    // Ext.MessageBox.wait('Loading......', '');
-    var mask = new Ext.LoadMask(Ext.getCmp('problemset-panel').el, {
-      msg : 'Loading...'
-    });
-    mask.show();
-    var params = {};
-    if (problemType != undefined && problemType.length > 0) {
-      params['problem_type'] = problemType;
-    }
-    if (difficulty != undefined && difficulty.length > 0) {
-      params['difficulty'] = difficulty;
-    }
-    if (problemContent != undefined && problemContent.length > 0) {
-      params['problem_content'] = problemContent;
-    }
-    if (knowledge != undefined && knowledge.length > 0) {
-      params['knowledge'] = knowledge;
-    }
-    var panel = Ext.getCmp('problem-list-form');
-    panel.removeAll();
-    Ext.Ajax.request({
-      url : root + '/problemset/list',
-      method : 'get',
-      params : params,
-      success : function(resp) {
-        // Ext.MessageBox.hide();
-        mask.hide();
-        var problems = Ext.JSON.decode(resp.responseText);
-        var items = [];
-        for ( var i in problems) {
-          items.push(makeProblemTemplate(problems[i]));
-        }
-        panel.add(items);
-      },
-      failure : function() {
-        mask.hide();
-        // Ext.MessageBox.hide();
-      }
-    });
-  };
-
-  var makeDifficulty = function(difficulty) {
-    switch (difficulty) {
-    case 1:
-      return '<span class="mystyle_all mystyle_blue" title="难度1级">'
-          + difficulty + '</span>';
-    case 2:
-      return '<span class="mystyle_all mystyle_bluegreen" title="难度2级">'
-          + difficulty + '</span>';
-    case 3:
-      return '<span class="mystyle_all mystyle_green" title="难度3级">'
-          + difficulty + '</span>';
-    case 4:
-      return '<span class="mystyle_all mystyle_yellow" title="难度4级">'
-          + difficulty + '</span>';
-    case 5:
-      return '<span class="mystyle_all mystyle_red" title="难度5级">' + difficulty
-          + '</span>';
-    }
-    return '';
-  };
-
-  /**
-   * Generate template for each problem object.
-   */
-  var makeProblemTemplate = function(problem) {
-    return {
-      xtype : 'panel',
-      id : 'problem_' + problem['id'],
-      layout : 'column',
-      width : 838,
-      bodyStyle : {
-        borderColor : borderColor,
-        borderTop : 0,
-        borderRight : 0,
-        borderLeft : 0
-      },
-      defaultType : 'panel',
-      defaults : {
-        border : false,
-        bodyPadding : '15 5 5 5'
-      },
-      items : [
-          {
-            width : 500,
-            html : problem['problemContent']
-          },
-          {
-            width : 150,
-            html : problem['knowledge']
-          },
-          {
-            width : 90,
-            html : '<span>难度：</span>' + makeDifficulty(problem['difficulty'])
-          },
-          {
-            columnWidth : 1,
-            bodyPadding: '15 0 5 0',
-            html : '<span class="mystyle_all mystyle_grey">'
-                + problem['problemType'] + '</span>'
-          } ]
-    };
-  };
-
   var getFilterContent = function() {
     var content = Ext.getCmp('problem-search').getValue();
     var knowledge = Ext.getCmp('knowledge-search').getValue();
@@ -134,10 +28,121 @@ Ext.onReady(function() {
     fetchProblems(types, diffs, content, knowledge);
   };
 
+  /**
+   * Read problems from server filtered by some conditions.
+   */
+  var fetchProblems = function(type, difficulty, content, knowledge) {
+    var mask = new Ext.LoadMask(Ext.getCmp('problemset-panel').el, {
+      msg : 'Loading...'
+    });
+    mask.show();
+    var params = {};
+    if (type != undefined && type.length > 0)
+      params['problem_type'] = type;
+    if (difficulty != undefined && difficulty.length > 0)
+      params['difficulty'] = difficulty;
+    if (content != undefined && content.length > 0)
+      params['problem_content'] = problemContent;
+    if (knowledge != undefined && knowledge.length > 0)
+      params['knowledge'] = knowledge;
+    Ext.Ajax.request({
+      url : root + '/problemset/list',
+      method : 'get',
+      params : params,
+      success : function(resp) {
+        mask.hide();
+        var problems = Ext.JSON.decode(resp.responseText);
+        resetList(problems);
+      },
+      failure : function() {
+        mask.hide();
+      }
+    });
+  };
+
+  /**
+   * Reset problems list items
+   */
+  var resetList = function(problems) {
+    var items = [];
+    for ( var i in problems) {
+      items.push(makeProblemTemplate(problems[i]['problemContent'],
+          problems[i]['knowledge'], makeDifficulty(problems[i]['difficulty']),
+          '<span class="mystyle_all mystyle_grey">'
+              + problems[i]['problemType'] + '</span>'));
+    }
+    var panel = Ext.getCmp('problem-list-form');
+    panel.removeAll();
+    panel.add(items);
+  };
+
+  /**
+   * Make difficulty style
+   */
+  var makeDifficulty = function(difficulty) {
+    switch (difficulty) {
+    case 1:
+      return '<span class="mystyle_all mystyle_blue" title="难度1级">'
+          + difficulty + '</span>';
+    case 2:
+      return '<span class="mystyle_all mystyle_bluegreen" title="难度2级">'
+          + difficulty + '</span>';
+    case 3:
+      return '<span class="mystyle_all mystyle_green" title="难度3级">'
+          + difficulty + '</span>';
+    case 4:
+      return '<span class="mystyle_all mystyle_yellow" title="难度4级">'
+          + difficulty + '</span>';
+    case 5:
+      return '<span class="mystyle_all mystyle_red" title="难度5级">' + difficulty
+          + '</span>';
+    }
+    return '';
+  };
+
+  /**
+   * Generate template for each problem item.
+   */
+  var makeProblemTemplate = function(content, knowledge, difficulty, type) {
+    return {
+      xtype : 'panel',
+      layout : 'column',
+      width : 838,
+      bodyStyle : {
+        borderColor : borderColor,
+        borderTop : 0,
+        borderRight : 0,
+        borderLeft : 0
+      },
+      defaultType : 'panel',
+      defaults : {
+        border : false,
+        bodyPadding : '10 5 5 10'
+      },
+      items : [ {
+        width : 80,
+        html : type
+      }, {
+        width : 550,
+        html : content
+      }, {
+        width : 140,
+        html : knowledge
+      }, {
+        columnWidth : 1,
+        html : difficulty
+      } ]
+    };
+  };
+
+  /**
+   * Search Panel
+   */
   var searchPanel = {
     xtype : 'panel',
     region : 'north',
     margin : 0,
+    layout : 'column',
     bodyPadding : 15,
     bodyStyle : {
       borderColor : borderColor,
@@ -146,40 +151,32 @@ Ext.onReady(function() {
       borderLeft : 0,
       background : backColor
     },
-    layout : 'column',
+    defaults : {
+      height : 30,
+      listners : {
+        specialkey : function(f, e) {
+          if (e.getKey() == e.ENTER) {
+            getFilterContent();
+          }
+        }
+      }
+    },
     items : [ {
-      xtype : 'textfield',
       id : 'knowledge-search',
+      xtype : 'textfield',
       name : 'knowledgeSearch',
       width : 300,
-      height : 30,
-      emptyText : '输入知识点（空白为所有知识点）',
-      listeners : {
-        specialkey : function(f, e) {
-          if (e.getKey() == e.ENTER) {
-            getFilterContent();
-          }
-        }
-      }
+      emptyText : '输入知识点（空白为所有知识点）'
     }, {
-      xtype : 'textfield',
       id : 'problem-search',
+      xtype : 'textfield',
       name : 'problemSearch',
       width : 400,
-      height : 30,
       margin : '0 0 0 10',
       emptyText : '输入题目关键词',
-      listeners : {
-        specialkey : function(f, e) {
-          if (e.getKey() == e.ENTER) {
-            getFilterContent();
-          }
-        }
-      }
     }, {
       xtype : 'button',
-      //baseCls: 'button_yellow',
-      height : 30,
+      // baseCls: 'button_yellow',
       width : 120,
       margin : '0 0 0 10',
       padding : 8,
@@ -187,11 +184,15 @@ Ext.onReady(function() {
       handler : getFilterContent
     }, {
       xtype : 'panel',
+      height: 0,
       columnWidth : 1,
       border : false
     } ]
   };
 
+  /**
+   * Filter form for problem types
+   */
   var problemTypeForm = {
     xtype : 'form',
     id : 'problem-type-form',
@@ -204,7 +205,7 @@ Ext.onReady(function() {
       borderLeft : 0,
       background : backColor
     },
-    margin: '15 0 0 0',
+    margin : '15 0 0 0',
     defaultType : 'checkboxfield',
     defaults : {
       cls : 'checkbox_white',
@@ -259,6 +260,9 @@ Ext.onReady(function() {
     } ]
   };
 
+  /**
+   * Filter form for difficulties
+   */
   var difficultyForm = {
     xtype : 'form',
     id : 'difficulty-form',
@@ -325,6 +329,9 @@ Ext.onReady(function() {
     } ]
   };
 
+  /**
+   * Filter form
+   */
   var filterForm = {
     xtype : 'panel',
     bodyStyle : {
@@ -334,25 +341,49 @@ Ext.onReady(function() {
       borderLeft : 0,
       background : backColor
     },
-    bodyPadding: '15 0 0 0',
+    bodyPadding : '15 0 0 0',
     region : 'west',
     width : 120,
     items : [ {
       xtype : 'button',
-      //baseCls: 'button_yellow',
+      // baseCls: 'button_yellow',
       width : 90,
+      height: 30,
       margin : '0 0 0 15',
       text : '过滤题目',
       handler : getFilterContent
     }, problemTypeForm, difficultyForm ]
   };
 
+  /**
+   * Title for list form
+   */
+  var listFormTitle = function() {
+    var title = makeProblemTemplate('<span class="list_title">题目</span>',
+        '<span class="list_title">知识点</span>',
+        '<span class="list_title">难度</span>',
+        '<span class="list_title">题型</span>');
+    title['region'] = 'north';
+    title['defaults']['bodyPadding'] = '5 5 5 10';
+    return title;
+  };
+
+  /**
+   * List Form
+   */
   var listForm = {
     xtype : 'form',
-    id : 'problem-list-form',
     region : 'center',
+    layout : 'border',
     border : 0,
     overflowY : 'auto',
+    defaultType : 'panel',
+    items : [ listFormTitle(), {
+      id : 'problem-list-form',
+      region : 'center',
+      border : 0,
+      overflowY : 'auto'
+    } ],
     listeners : {
       afterrender : function(comp, opts) {
         fetchProblems();
@@ -376,4 +407,5 @@ Ext.onReady(function() {
     renderTo : 'main-content',
     items : [ searchPanel, filterForm, listForm ]
   });
+
 });

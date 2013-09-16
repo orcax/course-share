@@ -150,7 +150,7 @@ public class JdbcBaseDao implements BaseDao {
   public <E extends Object> E read(Integer id) {
     if (id == null)
       return null;
-    String sql = String.format("SELECT * FROM %s WHERE id='%s' LIMIT 50;", table, id);
+    String sql = String.format("SELECT * FROM %s WHERE id='%s';", table, id);
     return (E) jdbcTemplate.queryForObject(sql, getMapper());
   }
 
@@ -158,14 +158,15 @@ public class JdbcBaseDao implements BaseDao {
   public <E extends Object> E read(Integer id, String[] fields) {
     if (fields == null || fields.length == 0)
       return read(id);
-    String sql = String.format("SELECT %s FROM %s WHERE id='%s' LIMIT 50;",
+    String sql = String.format("SELECT %s FROM %s WHERE id='%s';",
         makeAttrs(fields), table, id);
     return (E) jdbcTemplate.queryForObject(sql, getMapper());
   }
 
   @Override
   public <E extends Object> List<E> find() {
-    String sql = String.format("SELECT * FROM %s LIMIT 50;", table);
+    String sql = String.format("SELECT * FROM %s LIMIT 200;", table);
+    System.out.println(sql);
     return (List<E>) jdbcTemplate.query(sql, getMapper());
   }
 
@@ -173,7 +174,7 @@ public class JdbcBaseDao implements BaseDao {
   public <E extends Object> List<E> find(String condition) {
     if (condition == null || "".equals(condition))
       return find();
-    String sql = String.format("SELECT * FROM %s WHERE %s LIMIT 50;", table, condition);
+    String sql = String.format("SELECT * FROM %s WHERE %s LIMIT 200;", table, condition);
     System.out.println(sql);
     return (List<E>) jdbcTemplate.query(sql, getMapper());
   }
@@ -182,15 +183,15 @@ public class JdbcBaseDao implements BaseDao {
   public <E extends Object> List<E> find(String condition, String[] fields) {
     if (fields == null || fields.length == 0)
       return find(condition);
-    String sql = String.format("SELECT %s FROM %s WHERE %s LIMIT 50;",
+    String sql = String.format("SELECT %s FROM %s WHERE %s LIMIT 200;",
         makeAttrs(fields), table, condition);
-    List<E> result = new ArrayList<E>();
-    result = (List<E>) jdbcTemplate.query(sql, getMapper());
-    return result;
+    System.out.println(sql);
+    return (List<E>) jdbcTemplate.query(sql, getMapper());
   }
 
   @Override
   public List<Map<String, Object>> query(String sql) {
+    System.out.println(sql);
     return jdbcTemplate.queryForList(sql);
   }
 
