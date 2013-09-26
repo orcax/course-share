@@ -173,7 +173,7 @@ Ext.onReady(function() {
       name : 'problemSearch',
       width : 400,
       margin : '0 0 0 10',
-      emptyText : '输入题目关键词',
+      emptyText : '输入题目关键词'
     }, {
       xtype : 'button',
       // baseCls: 'button_yellow',
