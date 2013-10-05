@@ -26,17 +26,18 @@ import org.tjsse.courseshare.bean.DSPicture;
 import org.tjsse.courseshare.bean.Problem;
 import org.tjsse.courseshare.service.ProblemSetService;
 import org.tjsse.courseshare.util.Config;
+import org.tjsse.courseshare.util.LibType;
 
 @Controller
 @RequestMapping("/problemset")
-public class ProblemSetController {
+public class ProblemsetController {
 
   @Autowired
   private ProblemSetService problemSetService;
 
   @RequestMapping(value = "", method = RequestMethod.GET)
   public ModelAndView index() {
-    return new ModelAndView("problemset", "pageTitle", "题库");
+    return new ModelAndView("problemset", "libType", LibType.PROBLEMSET);
   }
 
   @RequestMapping(value = "/import/{problems}", method = RequestMethod.GET)

@@ -1,15 +1,21 @@
 html,body {
   margin: 0;
   padding: 0;
-  widht: 100%;
+  width: 100%;
   height: 100%;
 }
 
 body {
   padding-top: 41px;
+  background-image: url(/course-share/img/bg-grid2.png);
+  background-position: 0 40px;
 }
 
-#myheader {
+.container {
+  max-width: 1024px;
+}
+
+#cs-header {
   border-radius: 0;
   margin: 0;
   min-height: 40px;
@@ -18,116 +24,221 @@ body {
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
 }
 
-.container {
-  max-width: 960px;
-}
-
-#mybrand {
+#cs-header-brand {
   color: white;
-  padding: 8px;
- }
-
-#mynavbar>li>a {
   padding: 10px;
+}
+
+#cs-header-collapse {
+  padding-right: 0;
+}
+
+#cs-header-nav a {
+  padding: 11px;
   font-size: 14px;
 }
 
-.center {
-  width: 960px;
-  margin: 0 auto;
+#cs-body,#cs-body-content {
+  height: 100%;
+  clear: both;
+}
+
+#cs-body-content {
+  width: 1024px;
+}
+
+#cs-north-frame {
+  margin: 15px auto;
+  clear: both;
   overflow: hidden;
+  padding: 10px;
 }
 
-.mystyle_all {
-  display: inline;
-  padding: .2em .6em .3em;
-  font-weight: bold;
-  line-height: 1;
-  color: #ffffff;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: .25em;
+#cs-west-frame {
+  margin: 0 10px 10px 0;
+  float: left;
+  width: 160px;
+  padding: 15px;
 }
 
-.mystyle_grey {
-  background-color: #999999;
+#cs-center-frame {
+  margin: 0 0 10px 0;
+  float: right;
+  width: 820px;
+  padding: 0;
 }
 
-.mystyle_grey {
-  background-color: #999;
+/***** Customed Style *****/
+
+.cs-frame-default {
+  border: 1px solid #e1e1e8;
+  background-color: #f7f7f9;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  behavior: url(/course-share/js/lib/PIE.htc);
 }
 
-.mystyle_blue {
-  background-color: #428bca;
+.cs-frame-grey {
+  border: 1px solid #dddddd;
+  background-color: #eeeeee;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  behavior: url(/course-share/js/lib/PIE.htc);
 }
 
-.mystyle_green {
-  background-color: #5cb85c;
+.cs-frame-blue {
+  border: 1px solid #d0e3f0;
+  background-color: #f0f7fd;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  behavior: url(/course-share/js/lib/PIE.htc);
 }
 
-.mystyle_yellow {
-  background-color: #f0ad4e;
+.cs-frame-white {
+  border: 1px solid #dddddd;
+  background-color: #fff;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  behavior: url(/course-share/js/lib/PIE.htc);
 }
 
-.mystyle_red {
-  background-color: #d9534f;
+.cs-frame-green {
+  border: 1px solid #d6e9c6;
+  background-color: #dff0d8;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  behavior: url(/course-share/js/lib/PIE.htc);
 }
 
-.mystyle_bluegreen {
-  background-color: #5bc0de;
+.cs-frame-yellow {
+  border: 1px solid #faebcc;
+  background-color: #fcf8e3;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  behavior: url(/course-share/js/lib/PIE.htc);
 }
 
-.mystyle_black {
-  background-color: #222;
+.cs-frame-red {
+  border: 1px solid #ebccd1;
+  background-color: #f2dede;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  behavior: url(/course-share/js/lib/PIE.htc);
 }
 
-.checkbox_white {
-  color: white;
-  font-weight: normal;
+.cs-checkbox-text {
+  font-size: 12px;
+  padding: 2px 8px 2px 8px;
+  width: 100px;
+  text-align: left;
 }
 
-.checkbox_whitebold {
-  color: white;
-  font-weight: bold;
+.cs-style-grey5 {
+  color: #fff;
+  background-color: #4e4e4e;
+  border-color: #2f2f2f;
 }
 
-.button_yellow {
-  display: inline;
-  padding: .2em .6em .3em;
-  font-weight: bold;
-  line-height: 1;
-  color: #333;
-  cursor: pointer;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: .25em;
-  background-color: #fee94f;
-  border-color: #fa2;
+.cs-style-grey5:hover {
+  color: #fff;
+  background-color: #3e3e3e;
+  border-color: #2f2f2f;
 }
 
-.button_yellow:hover {
-  display: inline;
-  padding: .2em .6em .3em;
-  text-decoration: none;
-  font-weight: bold;
-  line-height: 1;
-  color: #333;
-  cursor: pointer;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: .25em;
-  background-color: #fd9a0f;
-  border-color: #fa2;
+.cs-style-grey4 {
+  color: #fff;
+  background-color: #707070;
+  border-color: #434343;
 }
 
-.link_color {
-  color: #00802a;
+.cs-style-grey4:hover {
+  color: #fff;
+  background-color: #5a5a5a;
+  border-color: #434343;
 }
 
-.list_title {
+.cs-style-grey3 {
+  color: #fff;
+  background-color: #8d8d8d;
+  border-color: #55555;
+}
+
+.cs-style-grey3:hover {
+  color: #fff;
+  background-color: #717171;
+  border-color: #55555;
+}
+
+.cs-style-grey2 {
+  color: #fff;
+  background-color: #adadad;
+  border-color: #686868;
+}
+
+.cs-style-grey2:hover {
+  color: #fff;
+  background-color: #8a8a8a;
+  border-color: #686868;
+}
+
+.cs-style-grey1 {
+  color: #fff;
+  background-color: #cacaca;
+  border-color: #797979;
+}
+
+.cs-style-grey1:hover {
+  color: #fff;
+  background-color: #a2a2a2;
+  border-color: #797979;
+}
+
+.loading {
+  background:#c1c39a;
+  color:#303030;
+  font-size:20px;
+  padding:5px 10px;
+  text-align:center;
+  width:90%;
+  margin:0 auto;
+  display:none;
+  border-radius: 5px;  
+}
+
+/***** Problemset CSS *****/
+
+#problemset-title {
+  overflow: hidden;
+  padding: 5px 15px 5px 15px;
+  margin-bottom: 4px;
+}
+
+.problemset-title-section {
   font-size: 14px;
   font-weight: bold;
+  float: left;
+  color: #0367b0;
 }
+
+.problemset-item {
+  overflow: hidden;
+  padding: 5px 15px 5px 15px;
+  margin-bottom: 8px;
+}
+
+.problemset-item p {
+  margin: 0;
+  padding: 0;
+}
+
+.problemset-item-section {
+  font-size: 12px;
+  float: left;
+}
+
+.problemset-item-type,
+.problemset-item-diff {
+  font-size: 12px;
+  padding: 2px 10px 2px 10px;
+}
+
