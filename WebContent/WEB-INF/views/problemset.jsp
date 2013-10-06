@@ -97,18 +97,46 @@
       <span class="btn btn-danger cs-checkbox-text">难度：5级</span>
     </label>
   </div>
-</div>
+</div> <!-- #cs-west-frame -->
 
 <div id="cs-center-frame">
-  <div id="problemset-title" class="cs-frame-default">
-    <div class="problemset-title-section" style="width:75px">题型</div>
-    <div class="problemset-title-section" style="width:55px">难度</div> 
-    <div class="problemset-title-section" style="width:400px">题目</div>   
-    <div class="problemset-title-section" style="width:150px">知识点</div>
+  <div class="ps-row cs-frame-default">
+    <div class="ps-col ps-title ps-type">题型</div>
+    <div class="ps-col ps-title ps-diff">难度</div> 
+    <div class="ps-col ps-title ps-content">题目</div>   
+    <div class="ps-col ps-title ps-know">知识点</div>
   </div>
   <div id="problemset-list"></div>
-  <div id="problemset-load" class="loading">Loading ......</div>
-  <div id="problemset-end" class="loading">No More Problem</div>
+  <div id="problemset-loading" class="loading">Loading ......</div>
 </div>
+
+<script type="text/template" id="problem-tpl">
+<div class="ps-row <@=typeCls @>">
+  <div class="ps-problem">
+    <div class="ps-col ps-type">
+      <span class="btn ps-type-style cs-style-grey2"><@=type @></span>
+    </div>
+    <div class="ps-col ps-diff">
+      <span class="btn ps-diff-style <@=diffCls @>"><@=diff @></span>
+    </div>
+    <div class="ps-col ps-content">
+      <@=content @>
+    </div>
+    <div class="ps-col ps-know">
+      <@=know @>
+    </div>
+    <div class="ps-col" style="float:right;">
+      <button id="<@=id @>" class="key btn btn-danger ps-btn-style">答案</button>
+      <button id="<@=id @>" class="paper btn btn-warning ps-btn-style">出题</button>
+    </div>
+  </div>
+  <div id="<@=id @>" class="ps-key">
+    <div class="ps-key-left">
+              【答案】 <span class="glyphicon glyphicon-hand-right"></span> 
+    </div>
+    <div class="ps-key-right"><@=key @></div>
+  </div>
+</div>
+</script>
 
 <jsp:include page="layout-footer.jsp" flush="true" />

@@ -25,4 +25,8 @@ public enum LibType {
   public final int getIndex() {
     return this.index;
   }
+  
+  public final String isEqual(LibType lt, String result) {
+    return this.equals(lt) ? result : "";
+  }
 }

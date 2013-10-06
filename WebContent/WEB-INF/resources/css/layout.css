@@ -207,38 +207,87 @@ body {
 
 /***** Problemset CSS *****/
 
-#problemset-title {
-  overflow: hidden;
-  padding: 5px 15px 5px 15px;
-  margin-bottom: 4px;
-}
-
-.problemset-title-section {
-  font-size: 14px;
-  font-weight: bold;
-  float: left;
-  color: #0367b0;
-}
-
-.problemset-item {
+.ps-row {
   overflow: hidden;
   padding: 5px 15px 5px 15px;
   margin-bottom: 8px;
 }
 
-.problemset-item p {
-  margin: 0;
-  padding: 0;
-}
-
-.problemset-item-section {
+.ps-col {
   font-size: 12px;
   float: left;
 }
 
-.problemset-item-type,
-.problemset-item-diff {
+.ps-col p {
+  margin: 0;
+  padding: 0;
+}
+
+.ps-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #0367b0;
+}
+
+.ps-type {
+  width: 75px;
+}
+
+.ps-diff {
+  width: 55px;
+}
+
+.ps-content {
+  width: 400px;
+}
+
+.ps-know {
+  width: 150px;
+}
+
+.ps-problem {
+  width: 100%;
+  clear: both;
+  overflow: hidden;
+}
+
+.ps-type-style,
+.ps-diff-style {
   font-size: 12px;
   padding: 2px 10px 2px 10px;
 }
 
+.ps-btn-style {
+  font-size: 12px;
+  padding: 2px 10px 2px 10px;
+  float: right;
+  margin-left: 4px;
+}
+
+.ps-key {
+  width: 100%;
+  clear: both;
+  display: none;
+  border-top: 1px solid #ddd;
+  margin-top: 5px;
+  padding-top: 5px;
+  overflow: hidden;
+}
+
+.ps-key-left {
+  width: 130px;
+  font-size: 12px;
+  float: left;
+  padding-left: 55px;
+  color: #0367b0;
+}
+
+.ps-key-right {
+  width: 500px;
+  float: left;
+}
+
+.ps-key-right p {
+  margin: 0;
+  padding: 0;
+}
