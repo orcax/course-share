@@ -6,8 +6,8 @@ import org.tjsse.courseshare.bean.DSPicture;
 import org.tjsse.courseshare.bean.Problem;
 import org.tjsse.courseshare.util.Config;
 
-public interface ProblemSetService {
-  
+public interface ProblemsetService {
+
   public static final String ROOT_PATH = Config.ROOT_PATH;
   public static final String PIC_PATH = ROOT_PATH + "pics/";
   public static final String PIC_URL = "/course-share/problemset/picture/";
@@ -24,14 +24,17 @@ public interface ProblemSetService {
   public boolean convertDoc2Html(String docPath, String htmlPath);
 
   public int splitProblem(String htmlPath);
-  
+
   public DSPicture readPicture(int id);
-  
+
   public List<Problem> findProblems();
-  
+
   public List<Problem> findProblems(String[] contents);
-  
-  public List<Problem> findProblems(String[] types, Integer[] difficulty, String[] contents, String[] knowledge);
+
+  public List<Problem> findProblems(String[] types, Integer[] diffs,
+      String[] contents, String[] knows, int offset);
 
   public List<Problem> findProblemsByTypes(String[] types);
+  
+  public byte[] makePaper(Integer[] pids);
 }

@@ -1,6 +1,7 @@
 package org.tjsse.courseshare.service.impl;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,6 +37,9 @@ import org.apache.poi.hwpf.usermodel.Paragraph;
 import org.apache.poi.hwpf.usermodel.Picture;
 import org.apache.poi.hwpf.usermodel.PictureType;
 import org.apache.poi.hwpf.usermodel.Range;
+import org.apache.poi.poifs.filesystem.DirectoryEntry;
+import org.apache.poi.poifs.filesystem.DocumentEntry;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -45,12 +50,13 @@ import org.tjsse.courseshare.bean.Problem;
 import org.tjsse.courseshare.bean.ProblemResource;
 import org.tjsse.courseshare.dao.ProblemDao;
 import org.tjsse.courseshare.dao.ProblemResourceDao;
-import org.tjsse.courseshare.service.ProblemSetService;
+import org.tjsse.courseshare.service.ProblemsetService;
 import org.tjsse.courseshare.util.Config;
+import org.tjsse.courseshare.util.PaperMaker;
 import org.w3c.dom.Document;
 
 @Service
-public class ImplProblemSetService implements ProblemSetService {
+public class ImplProblemsetService implements ProblemsetService {
 
   @Autowired
   private ProblemResourceDao problemResourceDao;
@@ -286,59 +292,57 @@ public class ImplProblemSetService implements ProblemSetService {
   }
 
   @Override
-  public List<Problem> findProblems(String[] types, Integer[] difficulty,
-      String[] contents, String[] knowledge) {
+  public List<Problem> findProblems(String[] types, Integer[] diffs,
+      String[] contents, String[] knows, int offset) {
 
     StringBuffer typeCondition = new StringBuffer();
-    if (types != null) {
-      for (int i = 0; i < types.length; i++) {
-        if (types[i] == null || types[i].isEmpty())
+    if (types != null && types.length > 0) {
+      for (String t : types) {
+        if (t == null || t.isEmpty())
           continue;
-        if (typeCondition.length() != 0)
+        if (typeCondition.length() > 0)
           typeCondition.append(" OR ");
-        typeCondition.append(String.format("problem_type='%s'", types[i]));
+        typeCondition.append(String.format("(problem_type='%s')", t));
       }
     }
 
     StringBuffer diffCondition = new StringBuffer();
-    if (difficulty != null) {
-      for (int i = 0; i < difficulty.length; i++) {
-        if (difficulty[i] == null)
+    if (diffs != null && diffs.length > 0) {
+      for (Integer d : diffs) {
+        if (d == null)
           continue;
-        if (diffCondition.length() != 0)
+        if (diffCondition.length() > 0)
           diffCondition.append(" OR ");
-        diffCondition.append(String.format("difficulty=%d", difficulty[i]));
+        diffCondition.append(String.format("(difficulty=%d)", d));
       }
     }
 
     StringBuffer contentCondition = new StringBuffer();
-    if (contents != null) {
-      for (int i = 0; i < contents.length; i++) {
-        if (contents[i] == null || contents[i].isEmpty())
+    if (contents != null && contents.length > 0) {
+      for (String c : contents) {
+        if (c == null || c.isEmpty())
           continue;
-        if (contentCondition.length() != 0) {
+        if (contentCondition.length() > 0) {
           contentCondition.append(" AND ");
         }
-        contentCondition.append(String.format(
-            "(problem_content LIKE '%%%s%%' OR knowledge LIKE '%%%s%%')",
-            contents[i], contents[i]));
+        contentCondition
+            .append(String.format(
+                "(problem_content LIKE '%%%s%%' OR knowledge LIKE '%%%s%%')",
+                c, c));
       }
     }
 
-    System.out.println("1:" + knowledge);
     StringBuffer knowCondition = new StringBuffer();
-    if (knowledge != null) {
-      for (int i = 0; i < knowledge.length; i++) {
-        if (knowledge[i] == null || knowledge[i].isEmpty())
+    if (knows != null && knows.length > 0) {
+      for (String k : knows) {
+        if (k == null || k.isEmpty())
           continue;
         if (knowCondition.length() != 0) {
           knowCondition.append(" AND ");
         }
-        knowCondition.append(String.format("knowledge LIKE '%%%s%%'",
-            knowledge[i]));
+        knowCondition.append(String.format("(knowledge LIKE '%%%s%%')", k));
       }
     }
-    System.out.println("2:" + knowCondition);
 
     StringBuffer condition = new StringBuffer();
     if (typeCondition.length() > 0)
@@ -352,7 +356,7 @@ public class ImplProblemSetService implements ProblemSetService {
     String cond = condition.toString();
     if (cond.endsWith("AND"))
       cond = cond.substring(0, condition.lastIndexOf("AND"));
-    return problemDao.find(cond);
+    return problemDao.find(cond, offset);
   }
 
   @Override
@@ -481,9 +485,65 @@ public class ImplProblemSetService implements ProblemSetService {
     return success;
   }
 
+  @Override
+  public byte[] makePaper(Integer[] pids) {
+    List<Problem> problems = problemDao.read(pids);
+    String content = PaperMaker.makeHtml(problems);
+    ByteArrayInputStream bais = null;
+    try {
+      bais = new ByteArrayInputStream(content.getBytes("unicode"));
+    } catch (UnsupportedEncodingException e1) {
+      e1.printStackTrace();
+      return null;
+    }
+
+    String path = Config.ROOT_PATH + "test.doc";
+    FileOutputStream fos = null;
+    try {
+      POIFSFileSystem poifs = new POIFSFileSystem();
+      DirectoryEntry directory = poifs.getRoot();
+      DocumentEntry documentEntry = directory.createDocument("WordDocument",
+          bais);
+      fos = new FileOutputStream(path);
+      poifs.writeFilesystem(fos);
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      try {
+        if (fos != null)
+          fos.close();
+        if (bais != null)
+          bais.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    File doc = new File(path);
+    if (!doc.exists()) {
+      return null;
+    }
+    byte[] data = null;
+    FileInputStream fis = null;
+    try {
+      fis = new FileInputStream(doc);
+      data = new byte[(int) doc.length()];
+      fis.read(data);
+    } catch (IOException e) {
+    } finally {
+      try {
+        if (fis != null)
+          fis.close();
+      } catch (IOException e) {
+        return null;
+      }
+    }
+    return data;
+  }
+
   public static void main(String[] args) {
     try {
-      ImplProblemSetService ics = new ImplProblemSetService();
+      ImplProblemsetService ics = new ImplProblemsetService();
       // ics.convertDoc2Html(ROOT_PATH + "test1.doc", ROOT_PATH + "test1.html");
       ics.splitProblem(ROOT_PATH + "test1.html");
     } catch (Exception e) {

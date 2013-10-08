@@ -31,6 +31,7 @@ public class JdbcBaseDao implements BaseDao {
   private static final String BEAN_PACKAGE = "org.tjsse.courseshare.bean";
   private static final String DAO_PREFIX = "Jdbc";
   private static final String DAO_SUFFIX = "Dao";
+  private static final int LIMIT = 20;
 
   protected String bean;
   protected String table;
@@ -145,6 +146,32 @@ public class JdbcBaseDao implements BaseDao {
       }
     };
   }
+  
+  protected Object setBeanId(Object bean, Integer id) {
+    try {
+      Method m = bean.getClass().getMethod("setId", Integer.class);
+      m.invoke(bean, id);
+      return bean;
+    } catch (NoSuchMethodException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (SecurityException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IllegalArgumentException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (InvocationTargetException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
+  }
+  
+  /***** Public Interfaces *****/
 
   @Override
   public <E extends Object> E read(Integer id) {
@@ -162,33 +189,24 @@ public class JdbcBaseDao implements BaseDao {
         makeAttrs(fields), table, id);
     return (E) jdbcTemplate.queryForObject(sql, getMapper());
   }
-
+  
   @Override
-  public <E extends Object> List<E> find() {
-    String sql = String.format("SELECT * FROM %s LIMIT 200;", table);
+  public <E extends Object> List<E> read(Integer[] ids) {
+    if (ids == null || ids.length <= 0) {
+      return new ArrayList<E>();
+    }
+    StringBuffer sql = new StringBuffer();
+    sql.append(String.format("SELECT * FROM %s WHERE", table));
+    for(int i=0;i<ids.length;i++){
+      if(i > 0){
+        sql.append(" OR ");
+      }
+      sql.append(String.format("(id='%d')", ids[i]));
+    }
     System.out.println(sql);
-    return (List<E>) jdbcTemplate.query(sql, getMapper());
+    return (List<E>) jdbcTemplate.query(sql.toString(), getMapper());
   }
-
-  @Override
-  public <E extends Object> List<E> find(String condition) {
-    if (condition == null || "".equals(condition))
-      return find();
-    String sql = String.format("SELECT * FROM %s WHERE %s LIMIT 200;", table, condition);
-    System.out.println(sql);
-    return (List<E>) jdbcTemplate.query(sql, getMapper());
-  }
-
-  @Override
-  public <E extends Object> List<E> find(String condition, String[] fields) {
-    if (fields == null || fields.length == 0)
-      return find(condition);
-    String sql = String.format("SELECT %s FROM %s WHERE %s LIMIT 200;",
-        makeAttrs(fields), table, condition);
-    System.out.println(sql);
-    return (List<E>) jdbcTemplate.query(sql, getMapper());
-  }
-
+  
   @Override
   public List<Map<String, Object>> query(String sql) {
     System.out.println(sql);
@@ -247,27 +265,46 @@ public class JdbcBaseDao implements BaseDao {
     return null;
   }
 
-  private Object setBeanId(Object bean, Integer id) {
-    try {
-      Method m = bean.getClass().getMethod("setId", Integer.class);
-      m.invoke(bean, id);
-      return bean;
-    } catch (NoSuchMethodException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (SecurityException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (IllegalAccessException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (IllegalArgumentException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (InvocationTargetException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+  @Override
+  public <E extends Object> List<E> find() {
+    String sql = String.format("SELECT * FROM %s;", table);
+    System.out.println(sql);
+    return (List<E>) jdbcTemplate.query(sql, getMapper());
+  }
+
+  @Override
+  public <E extends Object> List<E> find(String condition) {
+    if (condition == null || condition.isEmpty())
+      return find();
+    String sql = String.format("SELECT * FROM %s WHERE %s;", table, condition);
+    System.out.println(sql);
+    return (List<E>) jdbcTemplate.query(sql, getMapper());
+  }
+  
+  @Override
+  public <E extends Object> List<E> find(String condition, int offset) {
+    String sql = String.format("SELECT * FROM %s WHERE id>=%d", table, offset);
+    if (condition != null && !condition.isEmpty()) {
+      sql += String.format(" AND (%s)", condition);
     }
+    sql += String.format(" LIMIT %d;", LIMIT);
+    System.out.println(sql);
+    return (List<E>) jdbcTemplate.query(sql, getMapper());
+  }
+
+  @Override
+  public <E extends Object> List<E> find(String condition, String[] fields) {
+    if (fields == null || fields.length == 0)
+      return find(condition);
+    String sql = String.format("SELECT %s FROM %s WHERE %s;",
+        makeAttrs(fields), table, condition);
+    System.out.println(sql);
+    return (List<E>) jdbcTemplate.query(sql, getMapper());
+  }
+
+  @Override
+  public <E extends Object> List<E> find(String condition, String[] fields, int offset) {
+    // TODO Auto-generated method stub
     return null;
   }
 }

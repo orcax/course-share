@@ -9,6 +9,10 @@
     </div> <!-- #cs-body-content -->
   </div> <!-- #cs-body -->
   
+  <div id="cs-footer">
+    <p>Copyright Tongji University 2013</p>
+  </div>
+  
 <!-- Javascript Library -->  
 <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
 <script src="//code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>

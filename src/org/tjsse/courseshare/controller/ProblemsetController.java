@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.tjsse.courseshare.bean.DSPicture;
 import org.tjsse.courseshare.bean.Problem;
-import org.tjsse.courseshare.service.ProblemSetService;
+import org.tjsse.courseshare.service.ProblemsetService;
 import org.tjsse.courseshare.util.Config;
 import org.tjsse.courseshare.util.LibType;
 
@@ -33,7 +34,16 @@ import org.tjsse.courseshare.util.LibType;
 public class ProblemsetController {
 
   @Autowired
-  private ProblemSetService problemSetService;
+  private ProblemsetService problemSetService;
+
+  private static final Map<String, String> TYPES = new HashMap<String, String>();
+  static {
+    TYPES.put("concept", "概念题");
+    TYPES.put("blankfill", "填空题");
+    TYPES.put("choice", "选择题");
+    TYPES.put("question", "问答题");
+    TYPES.put("integrate", "综合题");
+  }
 
   @RequestMapping(value = "", method = RequestMethod.GET)
   public ModelAndView index() {
@@ -43,20 +53,20 @@ public class ProblemsetController {
   @RequestMapping(value = "/import/{problems}", method = RequestMethod.GET)
   @ResponseBody
   public String importProblems(@PathVariable String problems) {
-    if(problems == null)
+    if (problems == null)
       return "0 problems are imported.";
     StringTokenizer st = new StringTokenizer(problems, ",");
     int count = 0;
-    while(st.hasMoreTokens()) {
+    while (st.hasMoreTokens()) {
       String p = st.nextToken().trim();
-      if(p.isEmpty())
+      if (p.isEmpty())
         continue;
       String docPath = Config.ROOT_PATH + p + ".doc";
       String htmlPath = Config.ROOT_PATH + p + ".html";
       if (!problemSetService.convertDoc2Html(docPath, htmlPath))
         continue;
       int c = problemSetService.splitProblem(htmlPath);
-      if(c > 0)
+      if (c > 0)
         count += c;
     }
     return count + " problems are imported";
@@ -68,11 +78,14 @@ public class ProblemsetController {
       @RequestParam(value = "problem_type", required = false) String problemType,
       @RequestParam(value = "difficulty", required = false) String difficulty,
       @RequestParam(value = "problem_content", required = false) String problemContent,
-      @RequestParam(value = "knowledge", required = false) String knowledge) {
+      @RequestParam(value = "knowledge", required = false) String knowledge,
+      @RequestParam(value = "offset", required = false) Integer offset) {
+
     System.out.println("type:" + problemType);
     System.out.println("difficulty:" + difficulty);
     System.out.println("content:" + problemContent);
     System.out.println("knowledge:" + knowledge);
+    System.out.println("offset:" + offset);
 
     // Get problems for specific types
     List<String> types = new ArrayList<String>();
@@ -80,7 +93,7 @@ public class ProblemsetController {
     if (problemType != null) {
       StringTokenizer st = new StringTokenizer(problemType, ",");
       while (st.hasMoreTokens()) {
-        String t = mapCnProblemType(st.nextToken().trim());
+        String t = TYPES.get(st.nextToken().trim());
         if (!t.isEmpty())
           types.add(t);
       }
@@ -128,11 +141,13 @@ public class ProblemsetController {
       if (!knows.isEmpty())
         pks = knows.toArray(new String[knows.size()]);
     }
-    System.out.println("pks:" + pks);
 
-    return problemSetService.findProblems(pts, pds, pcs, pks);
+    if (offset == null)
+      offset = 0;
+
+    return problemSetService.findProblems(pts, pds, pcs, pks, offset);
   }
-  
+
   @RequestMapping(value = "/picture/{picId}", method = RequestMethod.GET)
   public void picture(@PathVariable Integer picId, HttpServletResponse resp) {
     DSPicture pic = problemSetService.readPicture(picId);
@@ -146,19 +161,30 @@ public class ProblemsetController {
     }
   }
 
-
-  private String mapCnProblemType(String en) {
-    if ("type_concept".equals(en))
-      return "概念题";
-    if ("type_blankfill".equals(en))
-      return "填空题";
-    if ("type_choice".equals(en))
-      return "选择题";
-    if ("type_question".equals(en))
-      return "问答题";
-    if ("type_integrate".equals(en))
-      return "综合题";
-    return "";
+  @RequestMapping(value = "/paper", method = RequestMethod.GET)
+  public void paper(@RequestParam(value = "pids") String pids,
+      HttpServletResponse resp) {
+    List<Integer> tmp = new ArrayList<Integer>();
+    StringTokenizer st = new StringTokenizer(pids, ",");
+    Integer[] problemIds = null;
+    while (st.hasMoreTokens()) {
+      Integer p = Integer.parseInt(st.nextToken().trim());
+      tmp.add(p);
+    }
+    if (tmp.isEmpty()) {
+      return;
+    }
+    problemIds = tmp.toArray(new Integer[tmp.size()]);
+    byte[] data = problemSetService.makePaper(problemIds);
+    resp.setHeader("Content-disposition", "attachment;filename=paper.doc");
+    resp.setContentType("application/msword");
+    resp.setContentLength(data.length);
+    try {
+      OutputStream os = resp.getOutputStream();
+      os.write(data);
+      os.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } 
   }
-
-  }
+}
