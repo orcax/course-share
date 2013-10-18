@@ -1,5 +1,6 @@
 package org.tjsse.courseshare.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -34,7 +35,7 @@ import org.tjsse.courseshare.util.LibType;
 public class ProblemsetController {
 
   @Autowired
-  private ProblemsetService problemSetService;
+  private ProblemsetService problemsetService;
 
   private static final Map<String, String> TYPES = new HashMap<String, String>();
   static {
@@ -45,33 +46,63 @@ public class ProblemsetController {
     TYPES.put("integrate", "综合题");
   }
 
+  public static final String PROBLEM_PATH = Config.PROBLEM_PATH;
+
+  /* 
+   * Action: '/index', Method: GET
+   * Default index page.
+   */
   @RequestMapping(value = "", method = RequestMethod.GET)
   public ModelAndView index() {
     return new ModelAndView("problemset", "libType", LibType.PROBLEMSET);
   }
 
+  /* 
+   * Action: '/import', Method: GET
+   * Import problems from ms word.
+   */
   @RequestMapping(value = "/import/{problems}", method = RequestMethod.GET)
   @ResponseBody
   public String importProblems(@PathVariable String problems) {
-    if (problems == null)
+    if (problems == null) {
       return "0 problems are imported.";
+    }
     StringTokenizer st = new StringTokenizer(problems, ",");
     int count = 0;
     while (st.hasMoreTokens()) {
       String p = st.nextToken().trim();
-      if (p.isEmpty())
+      if (p.isEmpty()) {
         continue;
-      String docPath = Config.ROOT_PATH + p + ".doc";
-      String htmlPath = Config.ROOT_PATH + p + ".html";
-      if (!problemSetService.convertDoc2Html(docPath, htmlPath))
+      }
+      String docPath = String.format("%s/%s.doc", PROBLEM_PATH, p);
+      String htmlPath = String.format("%s/%s.html", PROBLEM_PATH, p);
+      if (!problemsetService.convertDoc2Html(docPath, htmlPath)) {
         continue;
-      int c = problemSetService.splitProblem(htmlPath);
-      if (c > 0)
+      }
+      int c = problemsetService.splitProblem(htmlPath);
+      if (c > 0) {
         count += c;
+      }
+      new File(htmlPath).delete();
     }
     return count + " problems are imported";
   }
+  
+  /*
+   * Action: '/clear', Method: GET
+   * Clear all problem records in DB and files on disk.
+   */
+  @RequestMapping(value="/clear", method = RequestMethod.GET)
+  @ResponseBody
+  public String clearProblems() {
+    problemsetService.removeAll();
+    return "All problems are cleared!";
+  }
 
+  /*
+   * Action: '/list', Method: GET
+   * List all problems under certain condition.
+   */
   @RequestMapping(value = "/list", method = RequestMethod.GET)
   @ResponseBody
   public List<Problem> listProblems(
@@ -118,7 +149,7 @@ public class ProblemsetController {
     List<String> contents = new ArrayList<String>();
     String[] pcs = null;
     if (problemContent != null) {
-      StringTokenizer st = new StringTokenizer(problemContent);
+      StringTokenizer st = new StringTokenizer(problemContent, ",");
       while (st.hasMoreTokens()) {
         String c = st.nextToken().trim();
         if (!c.isEmpty())
@@ -132,7 +163,7 @@ public class ProblemsetController {
     List<String> knows = new ArrayList<String>();
     String[] pks = null;
     if (knowledge != null) {
-      StringTokenizer st = new StringTokenizer(knowledge);
+      StringTokenizer st = new StringTokenizer(knowledge, ",");
       while (st.hasMoreTokens()) {
         String k = st.nextToken().trim();
         if (!k.isEmpty())
@@ -145,12 +176,16 @@ public class ProblemsetController {
     if (offset == null)
       offset = 0;
 
-    return problemSetService.findProblems(pts, pds, pcs, pks, offset);
+    return problemsetService.findProblems(pts, pds, pcs, pks, offset);
   }
 
-  @RequestMapping(value = "/picture/{picId}", method = RequestMethod.GET)
-  public void picture(@PathVariable Integer picId, HttpServletResponse resp) {
-    DSPicture pic = problemSetService.readPicture(picId);
+  /*
+   * Action: '/resource', Method: GET
+   * Read problem resources from DB and disk.
+   */
+  @RequestMapping(value = "/resource/{rid}", method = RequestMethod.GET)
+  public void picture(@PathVariable Integer rid, HttpServletResponse resp) {
+    DSPicture pic = problemsetService.readPicture(rid);
     resp.setContentType("image/" + pic.getMediaType());
     try {
       OutputStream os = resp.getOutputStream();
@@ -161,6 +196,10 @@ public class ProblemsetController {
     }
   }
 
+  /*
+   * Action: '/paper', Method: GET
+   * Make paper from selected problems
+   */
   @RequestMapping(value = "/paper", method = RequestMethod.GET)
   public void paper(@RequestParam(value = "pids") String pids,
       HttpServletResponse resp) {
@@ -175,7 +214,7 @@ public class ProblemsetController {
       return;
     }
     problemIds = tmp.toArray(new Integer[tmp.size()]);
-    byte[] data = problemSetService.makePaper(problemIds);
+    byte[] data = problemsetService.makePaper(problemIds);
     resp.setHeader("Content-disposition", "attachment;filename=paper.doc");
     resp.setContentType("application/msword");
     resp.setContentLength(data.length);
@@ -185,6 +224,7 @@ public class ProblemsetController {
       os.close();
     } catch (IOException e) {
       e.printStackTrace();
-    } 
+    }
   }
+
 }

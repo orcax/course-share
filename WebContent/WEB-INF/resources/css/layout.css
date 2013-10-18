@@ -5,7 +5,7 @@ html,body {
 }
 
 body {
-  padding-top: 41px;
+  padding-top: 50px;
   background-image: url(/course-share/img/bg-grid2.png);
   background-position: 0 40px;
 }
@@ -17,7 +17,6 @@ body {
 #cs-header {
   border-radius: 0;
   margin: 0;
-  min-height: 40px;
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
   -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
@@ -25,16 +24,23 @@ body {
 
 #cs-header-brand {
   color: white;
-  padding: 10px;
+  padding: 5px 0 3px 0;
+  margin-left: 0;
 }
 
-#cs-header-collapse {
-  padding-right: 0;
+#cs-header-subtitle {
+  clear: left;
+  font-size: 12px;
+  color: #cfcfcf;
+}
+
+.navbar-collapse {
+  padding: 0;
 }
 
 #cs-header-nav a {
-  padding: 11px;
-  font-size: 14px;
+  padding: 15px 10px 15px 10px;
+  font-size: 16px;
 }
 
 #cs-body,#cs-body-content {
@@ -67,6 +73,12 @@ body {
   padding: 0;
 }
 
+#cs-center-dialog {
+  margin: 0 0 10px 0;
+  clear: both;
+  padding: 0;
+}
+
 #cs-footer {
   border-top: 1px solid #e5e5e5;
   margin: 10px auto;
@@ -79,7 +91,6 @@ body {
 }
 
 /***** Customed Style *****/
-
 .cs-frame-default {
   border: 1px solid #e1e1e8;
   background-color: #f7f7f9;
@@ -204,15 +215,15 @@ body {
 }
 
 .loading {
-  background:#c1c39a;
-  color:#303030;
-  font-size:20px;
-  padding:5px 10px;
-  text-align:center;
-  width:90%;
-  margin:0 auto;
-  display:none;
-  border-radius: 5px;  
+  background: #c1c39a;
+  color: #303030;
+  font-size: 20px;
+  padding: 5px 10px;
+  text-align: center;
+  width: 90%;
+  margin: 0 auto;
+  display: none;
+  border-radius: 5px;
 }
 
 .cs-border-red {
@@ -220,6 +231,42 @@ body {
 }
 
 /***** Problemset CSS *****/
+#cs-problemset-navbar {
+  width: 100%;
+}
+
+#ps-searchbar {
+  width: 500px;
+  float: left;
+  margin-right: 10px;
+}
+
+#ps-search,#ps-basket {
+  float: left;
+  margin-right: 10px;
+}
+
+#ps-pswbar {
+  width: 180px;
+  float: left;
+  margin: 0 10px 0 10px;
+}
+
+#ps-passwd-error {
+  color: red;
+  float: left;
+  font-size: 14px;
+  padding-top: 7px;
+}
+
+#ps-passwd-hide {
+  float: left;
+  margin: 0 10px 0 10px;
+}
+
+.ps-hidden {
+  display: none;
+}
 
 .ps-row {
   overflow: hidden;
@@ -253,6 +300,7 @@ body {
 
 .ps-content {
   width: 400px;
+  padding-right: 10px;
 }
 
 .ps-know {
@@ -265,8 +313,11 @@ body {
   overflow: hidden;
 }
 
-.ps-type-style,
-.ps-diff-style {
+.ps-action {
+  float: right;
+}
+
+.ps-type-style,.ps-diff-style {
   font-size: 12px;
   padding: 2px 10px 2px 10px;
 }
@@ -281,7 +332,6 @@ body {
 .ps-key {
   width: 100%;
   clear: both;
-  display: none;
   border-top: 1px solid #ddd;
   margin-top: 5px;
   padding-top: 5px;
@@ -304,4 +354,15 @@ body {
 .ps-key-right p {
   margin: 0;
   padding: 0;
+}
+
+#ps-basket-title {
+  float: left;
+  font-size: 18px;
+  margin: 4px 20px 0 10px;
+}
+
+#ps-basket-paper,#ps-basket-clear,#ps-basket-quit {
+  float: right;
+  margin-right: 10px;
 }

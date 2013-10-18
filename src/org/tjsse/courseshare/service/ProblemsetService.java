@@ -8,33 +8,22 @@ import org.tjsse.courseshare.util.Config;
 
 public interface ProblemsetService {
 
-  public static final String ROOT_PATH = Config.ROOT_PATH;
-  public static final String PIC_PATH = ROOT_PATH + "pics/";
-  public static final String PIC_URL = "/course-share/problemset/picture/";
-
-  public static final String WORD_ENCODING = "utf-8";
-  public static final String HTML_ENCODING = "utf-8";
-  public static final String COMMENT_SYMBOL = "//";
-  public static final String PROBLEM_TYPE_SYMBOL = "$";
-  public static final String DIFFICULTY_SYMBOL = "&";
-  public static final String PROBLEM_CONTENT_SYMBOL = "@1";
-  public static final String KEY_CONTENT_SYMBOL = "@2";
-  public static final String KNOWLEDGE_SYMBOL = "@3";
-
   public boolean convertDoc2Html(String docPath, String htmlPath);
 
   public int splitProblem(String htmlPath);
+  
+  public void removeAll();
 
-  public DSPicture readPicture(int id);
+//  public List<Problem> findProblems();
 
-  public List<Problem> findProblems();
-
-  public List<Problem> findProblems(String[] contents);
+//  public List<Problem> findProblems(String[] contents);
 
   public List<Problem> findProblems(String[] types, Integer[] diffs,
       String[] contents, String[] knows, int offset);
 
-  public List<Problem> findProblemsByTypes(String[] types);
+//  public List<Problem> findProblemsByTypes(String[] types);
+  
+  public DSPicture readPicture(int id);
   
   public byte[] makePaper(Integer[] pids);
 }

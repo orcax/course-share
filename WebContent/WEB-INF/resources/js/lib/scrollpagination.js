@@ -24,22 +24,24 @@
   $.fn.scrollPagination.loadContent = function(obj, opts) {
     var target = opts.scrollTarget;
     var mayLoadContent = $(target).scrollTop() + opts.heightOffset >= $(document).height() - $(target).height();
-    if (mayLoadContent) {
+    var lock = $(obj).attr('scrollLock');
+    if (mayLoadContent && lock == 'unlock') {
+      // *** Add lock to prevent duplicate request ***
+      $(obj).attr('scrollLock', 'locked');
       if (opts.beforeLoad != null) {
         opts.beforeLoad();
       }
-      $(obj).children().attr('rel', 'loaded');
       $.ajax({
         url : opts.url,
         type : opts.method,
         data : opts.param,
         dataType: 'json',
         success : function(data) {
-          //$(obj).append(data);
-          //var objectsRendered = $(obj).children('[rel!=loaded]');
           if (opts.afterLoad != null) {
             opts.afterLoad(data);
           }
+          // *** Unlock ***
+          $(obj).attr('scrollLock', 'unlock');
         }
       });
     }
@@ -48,6 +50,7 @@
   $.fn.scrollPagination.init = function(obj, opts) {
     var target = opts.scrollTarget;
     $(obj).attr('scrollPagination', 'enabled');
+    $(obj).attr('scrollLock', 'unlock');
     $(target).scroll(function(event) {
       if ($(obj).attr('scrollPagination') == 'enabled') {
         $.fn.scrollPagination.loadContent(obj, opts);

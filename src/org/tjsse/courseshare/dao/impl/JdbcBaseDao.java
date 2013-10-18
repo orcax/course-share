@@ -212,6 +212,13 @@ public class JdbcBaseDao implements BaseDao {
     System.out.println(sql);
     return jdbcTemplate.queryForList(sql);
   }
+  
+  @Override
+  public void clear() {
+    String sql = String.format("TRUNCATE TABLE %s;", table);
+    System.out.println(sql);
+    jdbcTemplate.execute(sql);
+  }
 
   @Override
   public <E extends Object> E save(E bean) {

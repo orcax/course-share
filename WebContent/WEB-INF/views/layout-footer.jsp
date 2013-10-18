@@ -14,10 +14,10 @@
   </div>
   
 <!-- Javascript Library -->  
-<script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
-<script src="//code.jquery.com/ui/1.10.3/jquery-ui.min.js"></script>
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-<script src="//underscorejs.org/underscore-min.js"></script>
+<script src="<%=path %>/js/lib/jquery-1.9.1.min.js"></script>
+<script src="<%=path %>/js/lib/bootstrap.min.js"></script>
+<script src="<%=path %>/js/lib/underscore-min.js"></script>
+<script src="<%=path %>/js/lib/jquery.qtip.min.js"></script>
 <script>
 var ROOT = '<%=path %>/';
 
@@ -26,9 +26,12 @@ _.templateSettings = {
   evaluate: /\<\@(.+?)\@\>/gim,
   escape: /\<\@\-(.+?)\@\>/gim
 };
+
+//document.oncontextmenu=new Function("event.returnValue=false;");
+//document.onselectstart=new Function("event.returnValue=false;");
 </script>
 <script src="<%=path%>/js/lib/scrollpagination.js"></script>
-<script src="<%=path%>/js/jq-<%=jsName %>.js"></script>  
+<script src="<%=path%>/js/jq-<%=jsName %>.js"></script> 
 
 </body>
 </html>

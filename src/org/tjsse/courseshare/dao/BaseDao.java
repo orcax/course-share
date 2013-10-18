@@ -10,10 +10,6 @@ public interface BaseDao {
   public <E extends Object> E read(Integer id, String[] fields);
 
   public <E extends Object> List<E> read(Integer[] ids);
-  
-  public List<Map<String, Object>> query(String sql);
-  
-  public <E extends Object> E save(E bean);
 
   // Select all data from table. (CAUTIOUS to use)
   public <E extends Object> List<E> find();
@@ -33,5 +29,11 @@ public interface BaseDao {
   // Number of results is up to $LIMIT.
   // IDs of results starts from $offset.
   public <E extends Object> List<E> find(String condition, String[] fields, int offset);
+  
+  public List<Map<String, Object>> query(String sql);
+  
+  public <E extends Object> E save(E bean);
+  
+  public void clear();
 
 }
