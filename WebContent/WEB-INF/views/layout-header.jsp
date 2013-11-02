@@ -43,17 +43,17 @@
       <div class="collapse navbar-collapse navbar-ex1-collapse pull-right">
         <ul id="cs-header-nav" class="nav navbar-nav">
           <li class="<%=libType.isEqual(LibType.IMAGE, "active") %>">
-            <a href="<%=path%>/image">
+            <a href="//xuexi.tongji.edu.cn">
               <span class="glyphicon glyphicon-picture"></span> <%=LibType.IMAGE.getName() %>
             </a>
           </li>
           <li class="<%=libType.isEqual(LibType.FLASH, "active") %>">
-            <a href="<%=path %>/flash">
+            <a href="//xuexi.tongji.edu.cn">
               <span class="glyphicon glyphicon-film"></span> <%=LibType.FLASH.getName() %>
             </a>
           </li> 
           <li class="<%=libType.isEqual(LibType.SUBJECT, "active") %>">
-            <a href="<%=path%>/subject">
+            <a href="//xuexi.tongji.edu.cn">
               <span class="glyphicon glyphicon-list-alt"></span> <%=LibType.SUBJECT.getName() %>
             </a>
           </li>

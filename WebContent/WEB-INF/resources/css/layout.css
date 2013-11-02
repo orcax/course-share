@@ -230,13 +230,18 @@ body {
   border: 2px solid #d9534f;
 }
 
+.hover_style .qtip-content {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 /***** Problemset CSS *****/
 #cs-problemset-navbar {
   width: 100%;
 }
 
 #ps-searchbar {
-  width: 500px;
+  width: 480px;
   float: left;
   margin-right: 10px;
 }
@@ -247,9 +252,20 @@ body {
 }
 
 #ps-pswbar {
-  width: 180px;
+  width: 165px;
   float: left;
   margin: 0 10px 0 10px;
+}
+
+#ps-passwd-instruct {
+  float: left;
+  padding: 3px;
+  margin: 5px 4px 5px 0;
+  cursor: pointer;
+  font-size: 12px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  behavior: url(/course-share/js/lib/PIE.htc);
 }
 
 #ps-passwd-error {

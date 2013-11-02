@@ -261,8 +261,9 @@ $(function() {
   };
 
   /** *** Global Event **** */
-
-  _refresh();
+  _enableScroll();
+  _eAdd2Basket($('#problemset-list button.basket-add'));
+  _eViewImage($('#problemset-list img'));
 
   /* Event in problemset list */
 
@@ -377,11 +378,12 @@ $(function() {
     _refresh();
   });
 
-  $('#ps-pswbar').qtip({
+  $('#ps-passwd-instruct').qtip({
     content : {
       text : '任课教师请发邮件至xzhang2000@sohu.com以获得密码！'
     },
     style : {
+      classes: 'hover_style',
       width : 170,
       tip : {
         corner : 'top center'
