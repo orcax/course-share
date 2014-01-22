@@ -29,10 +29,12 @@
       <span class="glyphicon glyphicon-shopping-cart"></span> 试题篮
     </button>
     <div id="ps-pswbar" class="input-group">
-      <span class="input-group-addon">答案密码</span>
+      <span class="input-group-addon">
+        <span>答案密码</span>
+        <span id="ps-passwd-instruct" class="btn-danger">说明</span>
+      </span>
       <input type="password" id="ps-passwd" class="form-control" placeholder="输入密码">
     </div>
-    <span id="ps-passwd-instruct" class="btn-danger">说明</span>
     <span id="ps-passwd-error" class="ps-hidden">密码错误</span>
     <button type="button" id="ps-passwd-hide" class="btn btn-primary ps-hidden">隐藏答案</button>
   </div>  

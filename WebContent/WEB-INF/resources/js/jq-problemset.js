@@ -32,7 +32,6 @@ $(function() {
     'btn-warning': '未选'
   };
 
-
   var URL = ROOT + 'problemset/list';
 
   var PSW = '666888';
@@ -251,20 +250,29 @@ $(function() {
    * Show specific element.
    */
   var _show = function() {
-    for (i in arguments) {
+    for (var i in arguments) {
       $(arguments[i]).fadeIn().css('display', '').removeClass('ps-hidden');
     }
   };
 
+  /**
+   * Judge if given problem id is in the basket.
+   */
   var _inBasket = function(id) {
     return $('#paperbasket-list .ps-row[id="' + id + '"]').length > 0 ? true : false;
   };
 
-  /** *** Global Event **** */
-  _enableScroll();
-  _eAdd2Basket($('#problemset-list button.basket-add'));
-  _eViewImage($('#problemset-list img'));
-
+  
+  /**********************************/
+  /********** Global Event **********/
+  /**********************************/
+  
+  var init = function() {
+    _enableScroll();
+    _eAdd2Basket($('#problemset-list button.basket-add'));
+    _eViewImage($('#problemset-list img'));
+  }();
+  
   /* Event in problemset list */
 
   $('input#ps-passwd').keypress(function(event) {
@@ -275,6 +283,7 @@ $(function() {
       } else {
         _show('#ps-passwd-error');
       }
+      return false;
     }
   });
 
@@ -282,7 +291,26 @@ $(function() {
     $('input#ps-passwd').val('');
     _show('#ps-pswbar');
     _hide('.ps-key', '#ps-passwd-error', '#ps-passwd-hide');
+    return;
   });
+  
+  $('#ps-passwd-instruct').qtip({
+    content : {
+      text : '任课教师请发送邮件获取密码: xzhang2000@sohu.com'
+    },
+    style : {
+      classes: 'hover_style',
+      width : 185,
+      tip : {
+        corner : 'top center'
+      }
+    },
+    position : {
+      my : 'top center',
+      at : 'bottom center'
+    }
+  });
+
 
   /*
    * $('button#selectall').click(function() {
@@ -319,31 +347,35 @@ $(function() {
    * Click to show paper basket.
    */
   $('button#ps-basket').click(function() {
-        _hide('#cs-problemset-navbar', '#cs-west-frame', '#cs-center-frame');
-        _show('#cs-paperbasket-navbar', '#cs-center-dialog');
-        var list = [];
-        for (var id in _basket) {          
-          list.push(_basket[id]);
-        }
-        $('#paperbasket-list').html('').append(list.join(''));
-        _eRemoveFromBasket($('#paperbasket-list button.basket-remove'));
-        _eSelectInBasket($('#paperbasket-list button.basket-select'));
-      });
+    _hide('#cs-problemset-navbar', '#cs-west-frame', '#cs-center-frame');
+    _show('#cs-paperbasket-navbar', '#cs-center-dialog');
+    var list = [];
+    for (var id in _basket) {        
+      list.push(_basket[id]);
+    }
+    $('#paperbasket-list').html('').append(list.join(''));
+    _eRemoveFromBasket($('#paperbasket-list button.basket-remove'));
+    _eSelectInBasket($('#paperbasket-list button.basket-select'));
+    return; 
+  });
 
   $('button#ps-search').click(function() {
     _refresh();
+    return;
   });
 
   $('input#filter-content').keypress(function(event) {
     if (event.which == 13) {
       _refresh();
     }
+    return;
   });
 
   $('input#filter-know').keypress(function(event) {
     if (event.which == 13) {
       _refresh();
     }
+    return;
   });
 
   $('input[name="filter-type"]').click(function() {
@@ -360,6 +392,7 @@ $(function() {
       }
     }
     _refresh();
+    return;
   });
 
   $('input[name="filter-diff"]').click(function() {
@@ -376,23 +409,7 @@ $(function() {
       }
     }
     _refresh();
-  });
-
-  $('#ps-passwd-instruct').qtip({
-    content : {
-      text : '任课教师请发邮件至xzhang2000@sohu.com以获得密码！'
-    },
-    style : {
-      classes: 'hover_style',
-      width : 170,
-      tip : {
-        corner : 'top center'
-      }
-    },
-    position : {
-      my : 'top center',
-      at : 'bottom center'
-    }
+    return;
   });
 
   /* Events in paper basker */
@@ -400,6 +417,7 @@ $(function() {
   $('button#ps-basket-quit').click(function() {
     _show('#cs-problemset-navbar', '#cs-west-frame', '#cs-center-frame');
     _hide('#cs-paperbasket-navbar', '#cs-center-dialog');
+    return;
   });
 
   $('button#ps-basket-paper').click(function() {
@@ -412,12 +430,15 @@ $(function() {
       return false;
     }
     window.location.href = ROOT + 'problemset/paper?pids=' + list.join(',');
+    return;
   });
 
   $('button#ps-basket-clear').click(function() {
     $('#paperbasket-list .ps-row').remove();
-    _chgBtnType($('#problemset-list button.basket-add'), BTN_BASKET_ADD);
+    //_chgBtnType($('#problemset-list button.basket-add'), BTN_BASKET_ADD);
+    $('#problemset-list button.basket-add').removeClass('btn-danger').addClass('btn-success').text('放入试题篮');
     _basket = {};
+    return;
   });
 
 });
