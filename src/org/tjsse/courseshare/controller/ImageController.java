@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.tjsse.courseshare.bean.Image;
-import org.tjsse.courseshare.service.CoursewareService;
 import org.tjsse.courseshare.service.ImageService;
 import org.tjsse.courseshare.util.Config;
 
