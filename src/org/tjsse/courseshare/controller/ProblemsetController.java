@@ -3,18 +3,14 @@ package org.tjsse.courseshare.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -49,25 +45,25 @@ public class ProblemsetController {
 
   public static final String PROBLEM_PATH = Config.PROBLEM_PATH;
 
-  /* 
-   * Action: '/index', Method: GET
-   * Default index page.
+  /*
+   * Action: '/index', Method: GET Default index page.
    */
   @RequestMapping(value = "", method = RequestMethod.GET)
-  public ModelAndView index() {
-    List<Problem> problems = problemsetService.findProblems(null, null, null, null, 0);
+  public ModelAndView index(HttpSession session) {
+    List<Problem> problems = problemsetService.findProblems(null, null, null,
+        null, 0);
     if (problems == null) {
       problems = new ArrayList<Problem>();
     }
     ModelMap map = new ModelMap();
     map.addAttribute("problems", problems);
     map.addAttribute("libType", LibType.PROBLEMSET);
+    map.addAttribute("login", session.getAttribute("login") != null);
     return new ModelAndView("problemset", map);
   }
 
-  /* 
-   * Action: '/import', Method: GET
-   * Import problems from ms word.
+  /*
+   * Action: '/import', Method: GET Import problems from ms word.
    */
   @RequestMapping(value = "/import/{problems}", method = RequestMethod.GET)
   @ResponseBody
@@ -95,12 +91,12 @@ public class ProblemsetController {
     }
     return count + " problems are imported";
   }
-  
+
   /*
-   * Action: '/clear', Method: GET
-   * Clear all problem records in DB and files on disk.
+   * Action: '/clear', Method: GET Clear all problem records in DB and files on
+   * disk.
    */
-  @RequestMapping(value="/clear", method = RequestMethod.GET)
+  @RequestMapping(value = "/clear", method = RequestMethod.GET)
   @ResponseBody
   public String clearProblems() {
     problemsetService.removeAll();
@@ -108,8 +104,7 @@ public class ProblemsetController {
   }
 
   /*
-   * Action: '/list', Method: GET
-   * List all problems under certain condition.
+   * Action: '/list', Method: GET List all problems under certain condition.
    */
   @RequestMapping(value = "/list", method = RequestMethod.GET)
   @ResponseBody
@@ -188,8 +183,7 @@ public class ProblemsetController {
   }
 
   /*
-   * Action: '/resource', Method: GET
-   * Read problem resources from DB and disk.
+   * Action: '/resource', Method: GET Read problem resources from DB and disk.
    */
   @RequestMapping(value = "/resource/{rid}", method = RequestMethod.GET)
   public void picture(@PathVariable Integer rid, HttpServletResponse resp) {
@@ -205,8 +199,7 @@ public class ProblemsetController {
   }
 
   /*
-   * Action: '/paper', Method: GET
-   * Make paper from selected problems
+   * Action: '/paper', Method: GET Make paper from selected problems
    */
   @RequestMapping(value = "/paper", method = RequestMethod.GET)
   public void paper(@RequestParam(value = "pids") String pids,

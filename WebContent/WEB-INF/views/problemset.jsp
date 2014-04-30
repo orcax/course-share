@@ -13,9 +13,9 @@
     }
     ++offset;
   }
+  Boolean hasSetPsw = (Boolean)request.getAttribute("login");
 %>
 <jsp:include page="layout-header.jsp" flush="true" />
-
 <div id="cs-north-frame" class="row cs-frame-default">
   <div id="cs-problemset-navbar">
     <div id="ps-searchbar" class="input-group">
@@ -28,7 +28,12 @@
     <button type="button" id="ps-basket" class="btn btn-primary">
       <span class="glyphicon glyphicon-shopping-cart"></span> 试题篮
     </button>
-    <div id="ps-pswbar" class="input-group">
+    <%
+    String pswbarClass = "", pswhideClass = "";
+    if (hasSetPsw) pswbarClass = "ps-hidden";
+    else pswhideClass = "ps-hidden";
+    %>
+    <div id="ps-pswbar" class="input-group <%=pswbarClass %>">
       <span class="input-group-addon">
         <span>答案密码</span>
         <span id="ps-passwd-instruct" class="btn-danger">说明</span>
@@ -36,8 +41,8 @@
       <input type="password" id="ps-passwd" class="form-control" placeholder="输入密码">
     </div>
     <span id="ps-passwd-error" class="ps-hidden">密码错误</span>
-    <button type="button" id="ps-passwd-hide" class="btn btn-primary ps-hidden">隐藏答案</button>
-  </div>  
+    <button type="button" id="ps-passwd-hide" class="btn btn-primary <%=pswhideClass %>">隐藏答案</button>
+  </div> <!-- / #cs-problemset-navar --> 
   <div id="cs-paperbasket-navbar" class="ps-hidden">
     <span id="ps-basket-title">试题篮</span>
     <button type="button" id="ps-basket-quit" class="btn btn-primary">退出</button>
@@ -47,8 +52,8 @@
     <button type="button" id="ps-basket-paper" class="btn btn-primary">
       <span class="glyphicon glyphicon-print"></span> 自动组卷
     </button>    
-  </div>
-</div> <!-- #problemset-header -->
+  </div> <!-- / #cs-paperbasket-navbar -->
+</div> <!-- / #problemset-header -->
 
 <div id="cs-west-frame" class="cs-frame-default">
   <div class="form-group">
@@ -91,7 +96,7 @@
     </label>
   </div>
   <% } %>
-</div> <!-- #cs-west-frame -->
+</div> <!-- / #cs-west-frame -->
 
 <div id="cs-center-frame">
   <div class="ps-row cs-frame-default">
@@ -121,36 +126,38 @@
   diffCls.put(3, "btn-success");
   diffCls.put(4, "btn-warning");
   diffCls.put(5, "btn-danger");
+  
+  String pskeyClass = hasSetPsw ? "" : "ps-hidden";
 
   for(Problem p : problems) { 
     String type = typeCls.get(p.getProblemType());
     String diff = diffCls.get(p.getDifficulty());
   %>
   <div class="ps-row <%=type %>" id="<%=p.getId() %>">
-  <div id="<%=p.getId() %>" class="ps-problem">
-    <div class="ps-col ps-type">
-      <span class="btn ps-type-style cs-style-grey2"><%=p.getProblemType() %></span>
+    <div id="<%=p.getId() %>" class="ps-problem">
+      <div class="ps-col ps-type">
+        <span class="btn ps-type-style cs-style-grey2"><%=p.getProblemType() %></span>
+      </div>
+      <div class="ps-col ps-diff">
+        <span class="btn ps-diff-style <%=diff %>"><%=p.getDifficulty() %></span>
+      </div>
+      <div class="ps-col ps-content">
+        <%=p.getProblemContent() %>
+      </div>
+      <div class="ps-col ps-know">
+        <%=p.getKnowledge() %>
+      </div>
+      <div class="ps-col ps-action">   
+        <button id="<%=p.getId() %>" class="basket-add btn btn-success ps-btn-style">放入试题篮</button>
+      </div>
     </div>
-    <div class="ps-col ps-diff">
-      <span class="btn ps-diff-style <%=diff %>"><%=p.getDifficulty() %></span>
-    </div>
-    <div class="ps-col ps-content">
-      <%=p.getProblemContent() %>
-    </div>
-    <div class="ps-col ps-know">
-      <%=p.getKnowledge() %>
-    </div>
-    <div class="ps-col ps-action">   
-      <button id="<%=p.getId() %>" class="basket-add btn btn-success ps-btn-style">放入试题篮</button>
-    </div>
-  </div>
-  <div id="<%=p.getId() %>" class="ps-key ps-hidden">
-    <div class="ps-key-left">
-      【答案】 <span class="glyphicon glyphicon-hand-right"></span> 
-    </div>
-    <div class="ps-key-right"><%=p.getKeyContent() %></div>
-  </div>
-  </div>   
+    <div id="<%=p.getId() %>" class="ps-key <%=pskeyClass %>">
+      <div class="ps-key-left">
+        【答案】 <span class="glyphicon glyphicon-hand-right"></span> 
+      </div>
+      <div class="ps-key-right"><%=p.getKeyContent() %></div>
+    </div> <!-- / .ps-key -->
+  </div> <!-- / .ps-row -->
   <% } %>
   </div>
   <div id="problemset-loading" class="loading">Loading ......</div>
@@ -159,6 +166,7 @@
   <input type="hidden" id="filter-knows" value="">
   <input type="hidden" id="filter-types" value="">
   <input type="hidden" id="filter-diffs" value="">
+  <script id="has-set-pwd">hasSetPsw = <%=hasSetPsw %>;</script>
 </div>
 
 <div id="cs-center-dialog" class="ps-hidden">

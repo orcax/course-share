@@ -1,6 +1,8 @@
 $(function() {
 
-  /***** Global variables. *****/
+  /**************************************************************************/
+  /**                          Global Variables                            **/
+  /**************************************************************************/
 
   var CLS_P_TYPE = {
     '概念题' : 'cs-frame-grey',
@@ -34,11 +36,13 @@ $(function() {
 
   var URL = ROOT + 'problemset/list';
 
-  var PSW = '666888';
-
   _basket = {};
+  _login = hasSetPsw;
+  $("#has-set-pwd").remove();
 
-  /***** Local functions *****/
+  /**************************************************************************/
+  /**                         Internal Functions                           **/
+  /**************************************************************************/
 
   /**
    * Return integer of offset.
@@ -174,9 +178,10 @@ $(function() {
     // Bind events.
     _eAdd2Basket(list.find('button.basket-add'));
     _eViewImage(list.find('img'));
-    // Change button type if the problem is in basket.
-    if ($('#ps-pswbar').hasClass('ps-hidden') && $('#ps-passwd').val() == PSW) {
-      list.find('button.key').removeClass('ps-hidden');
+    // Show problems key if already set password.
+    if (_login) {
+      //list.find('button.key').removeClass('ps-hidden');
+      list.find('.ps-key').removeClass('ps-hidden');
     }
     for (var id in _basket) {
       var sel = list.find('button.basket-add[id="' + id + '"]');
@@ -263,9 +268,9 @@ $(function() {
   };
 
   
-  /**********************************/
-  /********** Global Event **********/
-  /**********************************/
+  /**************************************************************************/
+  /**                             Global Event                             **/
+  /**************************************************************************/
   
   var init = function() {
     _enableScroll();
@@ -277,21 +282,25 @@ $(function() {
 
   $('input#ps-passwd').keypress(function(event) {
     if (event.which == 13) {
-      if ($(this).val() == '666888') {
-        _show('.ps-key', '#ps-passwd-hide');
-        _hide('#ps-pswbar', '#ps-passwd-error');
-      } else {
-        _show('#ps-passwd-error');
-      }
-      return false;
+      var pwd = $(this).val();
+      $.post("auth/login", {pwd: pwd}, function(data) {
+        if (data.trim() == "success") {
+          _show('.ps-key', '#ps-passwd-hide');
+          _hide('#ps-pswbar', '#ps-passwd-error');
+          _login = true;
+        }else {
+          _show('#ps-passwd-error');
+        }
+      });
     }
   });
 
   $('button#ps-passwd-hide').click(function() {
+    $.post("auth/logout", function(data){});
     $('input#ps-passwd').val('');
     _show('#ps-pswbar');
     _hide('.ps-key', '#ps-passwd-error', '#ps-passwd-hide');
-    return;
+    _login = false;
   });
   
   $('#ps-passwd-instruct').qtip({
