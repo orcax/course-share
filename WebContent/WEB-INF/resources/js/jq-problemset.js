@@ -288,8 +288,27 @@ $(function() {
           _show('.ps-key', '#ps-passwd-hide');
           _hide('#ps-pswbar', '#ps-passwd-error');
           _login = true;
+          $('input#ps-passwd').qtip('api').destroy();
         }else {
-          _show('#ps-passwd-error');
+          $('input#ps-passwd').qtip({
+            content: {
+              text: '密码错误'
+            },
+            style : {
+              classes: 'hover_style',
+              tip : {
+                corner : 'top center'
+              }
+            },
+            position : {
+              my : 'top center',
+              at : 'bottom center'
+            },
+            show: { ready: true },
+            hide: {
+              when: { event: 'click' }
+            }
+          });
         }
       });
     }

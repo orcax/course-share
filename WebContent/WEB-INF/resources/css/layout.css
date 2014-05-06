@@ -238,6 +238,7 @@ body {
 /***** Problemset CSS *****/
 #cs-problemset-navbar {
   width: 100%;
+  overflow: hidden;
 }
 
 #ps-searchbar {
@@ -253,7 +254,7 @@ body {
 
 #ps-pswbar {
   width: 200px;
-  float: left;
+  float: right;
   margin: 0 10px 0 10px;
 }
 

@@ -40,7 +40,9 @@
       </span>
       <input type="password" id="ps-passwd" class="form-control" placeholder="输入密码">
     </div>
+    <!-- 
     <span id="ps-passwd-error" class="ps-hidden">密码错误</span>
+    -->
     <button type="button" id="ps-passwd-hide" class="btn btn-primary <%=pswhideClass %>">隐藏答案</button>
   </div> <!-- / #cs-problemset-navar --> 
   <div id="cs-paperbasket-navbar" class="ps-hidden">
